@@ -18,25 +18,13 @@ import os
 import sys
 import random
 
-#pyside
 from PySide6 import *
 from PySide6.QtCore import QFileInfo
 from PySide6.QtGui import Qt
 from PySide6.QtUiTools import loadUiType
-
-#from PyQt5.QtWidgets import *
-#from PyQt5 import uic
-
-#from PyQt5.QtCore import pyqtSlot, Qt
-#from PyQt5.QtGui import *
-#from PyQt5.QtCore import pyqtSlot, Qt
-#from PyQt5.QtWidgets import *
-#from PyQt5.QtGui import *
-#from PyQt5.QtCore import QFileInfo
 import random
-# import pandas as pd
+
 import xlsxwriter
-# from openpyxl import load_workbook
 import openpyxl
 from PyQt5.uic.properties import QtGui
 
@@ -49,7 +37,6 @@ from pymysql.constants import CLIENT
 conn = None
 cur = None
 
-#본인 설정에 맞게 변경
 conn = pymysql.connect(host='127.0.0.1', port=3307, user='root', password='dormammu', db='lghpdb', charset='utf8',
                        client_flag=CLIENT.MULTI_STATEMENTS, autocommit=True)
 cur = conn.cursor()
@@ -105,7 +92,6 @@ class WindowClass(QMainWindow, form_class):
 
     # -openFile button 함수: 파일선택창
     def btn_fileLoad(self):
-        # QFileDialog.getOpenFileName(self, '', '', 'xlsx파일 (*.xlsx);; All File(*)')  # !!저장파일 타입 정해지면, 확장자에 추가
         # 미리보기ui연결 수정클릭->수정페이지
         self.hide()
         self.fifth = fifthwindow()
@@ -132,8 +118,9 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
 
         # 파일 이름으로 db에서 해당 정보 연결
         file_name = QFileInfo(file[0]).baseName()
+        sql = "CALL deleteProject('p1'); CALL createProject('p1', NULL, NULL, NULL); CALL createSimul('p1', 's1'); CALL updateSimulName(%s, 's1');"
+        cur.execute(sql, [str(file_name)])
 
-        # self._mainwin=parent
         vbox = QVBoxLayout()
         vbox.addWidget(self.table)
         grid = QGridLayout()
@@ -142,9 +129,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         grid.addWidget(edit, 0, 0)
         self.setLayout(vbox)
         self.setGeometry(200, 200, 400, 500)
-        # max_column,max_row는 text 있는 셀까지만 셈. db연동 필요
-        # print(load_sheet.max_column)
-        # print(load_sheet.max_row)
         sql = "SELECT GridSizeX FROM grid " + "WHERE Grid_ID = %s;"
         cur.execute(sql, [str(file_name)])
         file_col = cur.fetchone()
@@ -166,26 +150,34 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         # load_excel은 1부터, table은 0부터
         for i in range(1, row + 1):
             for j in range(1, col + 1):
-                if load_sheet.cell(i, j).value == "y":
+                print(load_sheet.cell(i, j).fill.start_color.index)
+                if load_sheet.cell(i, j).value == "↑":
+                    self.table.item(i - 1, j - 1).setText("↑")
+                elif load_sheet.cell(i, j).value == "↓":
+                    self.table.item(i - 1, j - 1).setText("↓")
+                elif load_sheet.cell(i, j).value == "←":
+                    self.table.item(i - 1, j - 1).setText("←")
+                elif load_sheet.cell(i, j).value == "→":
+                    self.table.item(i - 1, j - 1).setText("→")
+                if load_sheet.cell(i,j).fill.start_color.index=='FFFFFF00':
                     self.table.item(i - 1, j - 1).setBackground(Qt.yellow)
-                    self.table.item(i - 1, j - 1).setText("y")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.yellow)
-                if load_sheet.cell(i, j).value == "b":
+                    self.table.item(i - 1, j - 1).setForeground(Qt.black)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FF0000FF':
                     self.table.item(i - 1, j - 1).setBackground(Qt.darkBlue)
-                    self.table.item(i - 1, j - 1).setText("b")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.darkBlue)
-                if load_sheet.cell(i, j).value == "g":
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FF008000':
                     self.table.item(i - 1, j - 1).setBackground(Qt.darkGreen)
-                    self.table.item(i - 1, j - 1).setText("g")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.darkGreen)
-                if load_sheet.cell(i, j).value == "r":
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FFFF0000':
                     self.table.item(i - 1, j - 1).setBackground(Qt.red)
-                    self.table.item(i - 1, j - 1).setText("r")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.red)
-                if load_sheet.cell(i, j).value == "d":
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FF808080':
                     self.table.item(i - 1, j - 1).setBackground(Qt.darkGray)
-                    self.table.item(i - 1, j - 1).setText("d")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.darkGray)
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                else:
+                    self.table.item(i - 1, j - 1).setForeground(Qt.black)
+
+
         edit.clicked.connect(self.btn_edit)
         # self.show() #파일 선택후 맵미리보기창이 뒤에 뜨게됨
 
@@ -226,22 +218,29 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         block = QPushButton("블락")
         grid.addWidget(block, 1, 1)
         trash = QPushButton("삭제")
-        grid.addWidget(trash, 0, 5)
+        grid.addWidget(trash, 0, 8)
         clear = QPushButton("초기화")
-        grid.addWidget(clear, 1, 5)
+        grid.addWidget(clear, 1, 8)
         addrow = QPushButton("row추가")
-        grid.addWidget(addrow, 0, 3)
+        grid.addWidget(addrow, 0, 6)
         addcol = QPushButton("col추가")
-        grid.addWidget(addcol, 0, 4)
+        grid.addWidget(addcol, 0, 7)
         delrow = QPushButton("row삭제")
-        grid.addWidget(delrow, 1, 3)
+        grid.addWidget(delrow, 1, 6)
         delcol = QPushButton("col삭제")
-        grid.addWidget(delcol, 1, 4)
+        grid.addWidget(delcol, 1, 7)
         save = QPushButton("저장")
-        grid.addWidget(save, 2, 6)
+        grid.addWidget(save, 2, 9)
+        north = QPushButton("↑")
+        grid.addWidget(north, 0, 4)
+        south = QPushButton("↓")
+        grid.addWidget(south, 2, 4)
+        west = QPushButton("←")
+        grid.addWidget(west, 1,3)
+        east = QPushButton("→")
+        grid.addWidget(east, 1, 5)
         self.setLayout(vbox)
         self.setGeometry(200, 200, 400, 500)
-        # global변수 사용하기(file이름)
         load_xlsx = openpyxl.load_workbook(filename, data_only=True)
         load_sheet = load_xlsx['NewSheet1']
         # row = load_sheet.max_row
@@ -257,28 +256,34 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         # load_excel은 1부터, table은 0부터
         for i in range(1, row + 1):
             for j in range(1, col + 1):
-                if load_sheet.cell(i, j).value == "y":
-                    self.table.item(i - 1, j - 1).setBackground(Qt.yellow)
-                    self.table.item(i - 1, j - 1).setText("y")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.yellow)
-                if load_sheet.cell(i, j).value == "b":
-                    self.table.item(i - 1, j - 1).setBackground(Qt.darkBlue)
-                    self.table.item(i - 1, j - 1).setText("b")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.darkBlue)
-                if load_sheet.cell(i, j).value == "g":
-                    self.table.item(i - 1, j - 1).setBackground(Qt.darkGreen)
-                    self.table.item(i - 1, j - 1).setText("g")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.darkGreen)
-                if load_sheet.cell(i, j).value == "r":
-                    self.table.item(i - 1, j - 1).setBackground(Qt.red)
-                    self.table.item(i - 1, j - 1).setText("r")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.red)
-                if load_sheet.cell(i, j).value == "d":
-                    self.table.item(i - 1, j - 1).setBackground(Qt.darkGray)
-                    self.table.item(i - 1, j - 1).setText("d")
-                    self.table.item(i - 1, j - 1).setForeground(Qt.darkGray)
+                if load_sheet.cell(i, j).value == "↑":
+                    self.table.item(i - 1, j - 1).setText("↑")
+                elif load_sheet.cell(i, j).value == "↓":
+                    self.table.item(i - 1, j - 1).setText("↓")
+                elif load_sheet.cell(i, j).value == "←":
+                    self.table.item(i - 1, j - 1).setText("←")
+                elif load_sheet.cell(i, j).value == "→":
+                    self.table.item(i - 1, j - 1).setText("→")
 
-        # self.table.selectionModel().selectionChanged.connect(self.on_selection)
+
+                if load_sheet.cell(i,j).fill.start_color.index=='FFFFFF00':
+                    self.table.item(i - 1, j - 1).setBackground(Qt.yellow)
+                    self.table.item(i - 1, j - 1).setForeground(Qt.black)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FF0000FF':
+                    self.table.item(i - 1, j - 1).setBackground(Qt.darkBlue)
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FF008000':
+                    self.table.item(i - 1, j - 1).setBackground(Qt.darkGreen)
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FFFF0000':
+                    self.table.item(i - 1, j - 1).setBackground(Qt.red)
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                elif load_sheet.cell(i,j).fill.start_color.index == 'FF808080':
+                    self.table.item(i - 1, j - 1).setBackground(Qt.darkGray)
+                    self.table.item(i - 1, j - 1).setForeground(Qt.white)
+                else:
+                    self.table.item(i - 1, j - 1).setForeground(Qt.black)
+
         charge.clicked.connect(self.btn_charge)  # charge button 클릭
         chute.clicked.connect(self.btn_chute)  # chute button 클릭
         ws.clicked.connect(self.btn_ws)  # ws button 클릭
@@ -291,182 +296,163 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         delrow.clicked.connect(self.btn_delrow)  # delRow button 클릭
         delcol.clicked.connect(self.btn_delcol)  # delCol button 클릭
         save.clicked.connect(self.btn_save_map)  # saveMap button 클릭
+        north.clicked.connect(self.btn_north)
+        south.clicked.connect(self.btn_south)
+        west.clicked.connect(self.btn_west)
+        east.clicked.connect(self.btn_east)
         self.show()
 
-        # def on_selection(self,selected):
-        #    for ix in selected.indexes():
-        #        print('select row: {0}, col: {1}'.format(ix.row(),ix.column()))
+    def btn_north(self):
+        for ix in self.table.selectedIndexes():
+            """if self.table.item(ix.row(),ix.column()).background().color()==Qt.white:
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
+            elif self.table.item(ix.row(),ix.column()).background().color()==Qt.yellow:
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
+            else:
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)"""
+            self.table.item(ix.row(),ix.column()).setText("↑")
+    def btn_south(self):
+        for ix in self.table.selectedIndexes():
+            self.table.item(ix.row(),ix.column()).setText("↓")
+    def btn_west(self):
+        for ix in self.table.selectedIndexes():
+            self.table.item(ix.row(),ix.column()).setText("←")
+    def btn_east(self):
+        for ix in self.table.selectedIndexes():
+            self.table.item(ix.row(),ix.column()).setText("→")
 
-    #@pyqtSlot()
     def btn_charge(self):
         global yellow, red, green, blue, gray, file_grid
         i_charge = file_grid[13]
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_charge == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 1
             elif i_charge == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 1
             elif i_charge == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 1
             elif i_charge == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.shite)
                 blue = 1
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 1
 
-    #@pyqtSlot()
     def btn_chute(self):
         global yellow, red, green, blue, gray, file_grid
         i_chute = file_grid[14]
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_chute == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 2
             elif i_chute == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 2
             elif i_chute == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 2
             elif i_chute == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 3
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 2
 
-    #@pyqtSlot()
     def btn_ws(self):
         global yellow, red, green, blue, gray, file_grid
         i_ws = file_grid[15]
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_ws == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 3
             elif i_ws == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 3
             elif i_ws == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 3
             elif i_ws == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 3
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 3
 
-    #@pyqtSlot()
     def btn_buffer(self):
         global yellow, red, green, blue, gray, file_grid
         i_buf = file_grid[16]
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_buf == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 4
             elif i_buf == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 4
             elif i_buf == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 4
             elif i_buf == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 4
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 4
 
-    #@pyqtSlot()
     def btn_block(self):
         global yellow, red, green, blue, gray, file_grid
         i_blk = file_grid[17]
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_blk == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 5
             elif i_blk == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 5
             elif i_blk == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 5
             elif i_blk == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 5
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 5
 
-    #@pyqtSlot()
     def btn_trash(self):
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             self.table.item(ix.row(), ix.column()).setBackground(Qt.white)
             self.table.item(ix.row(), ix.column()).setText("")
+            self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_clear(self):
-        # self.table.clear()
         # 색상 변경 위한 item 추가
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
@@ -474,9 +460,8 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
             for j in range(col_count):
                 self.table.item(i, j).setBackground(Qt.white)
                 self.table.item(i, j).setText("")
-                # self.table.setItem(i, j, QTableWidgetItem())#
+                self.table.item(i, j).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_addcol(self):
         global temp_count_len
         temp_count_len += 1
@@ -486,8 +471,8 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         # 셀 색상 변경 위해 item 추가
         for i in range(row_count):
             self.table.setItem(i, col_count, QTableWidgetItem())
+            self.table.item(i, col_count).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_addrow(self):
         global temp_count_wid
         temp_count_wid += 1
@@ -497,15 +482,14 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         # 셀 색상 변경 위해 item 추가
         for j in range(col_count):
             self.table.setItem(row_count, j, QTableWidgetItem())
+            self.table.item(row_count, j).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_delcol(self):
         global temp_count_len
         temp_count_len -= 1
         col_count = self.table.columnCount()
         self.table.removeColumn(col_count - 1)
 
-    #@pyqtSlot()
     def btn_delrow(self):
         global temp_count_wid
         temp_count_wid -= 1
@@ -517,7 +501,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         workbook = xlsxwriter.Workbook(filename)  # 지정 파일 이름
         worksheet1 = workbook.add_worksheet('NewSheet1')
         global yellow, red, blue, gray, green, temp_count_len, temp_count_wid, file_name, file_grid
-        sql = "CALL deleteGrid(%s); CALL createGrid(%s, %s, %s, %s, %s); CALL updateCellCnt( %s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s);"
+        sql = "CALL deleteGrid(%s); CALL createGrid(%s, %s, %s, %s, %s); CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s);"
         cur.execute(sql, [file_name, file_name, temp_count_len, temp_count_wid, int(file_grid[4]), int(file_grid[5]),
                           file_name, int(file_grid[7]), int(file_grid[8]), int(file_grid[9]), int(file_grid[10]),
                           int(file_grid[11]), file_name, int(file_grid[13]), int(file_grid[14]), int(file_grid[15]),
@@ -554,42 +538,52 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 format = workbook.add_format()
                 
                 #DB에 특수 셀 색상 정보 업데이트
-                if item.text() == "y":
+                if item.background().color()==Qt.yellow:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(yellow)])
                     format.set_bg_color('yellow')
-                    format.set_font_color('yellow')
-                    worksheet1.write(row, col, 'y', format)
-                if item.text() == "b":
+                    format.set_font_color('black')
+                elif item.background().color()==Qt.darkBlue:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(blue)])
                     format.set_bg_color('blue')
-                    format.set_font_color('blue')
-                    worksheet1.write(row, col, 'b', format)
-                if item.text() == "g":
+                    format.set_font_color('white')
+                elif item.background().color()==Qt.darkGreen:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(green)])
                     format.set_bg_color('green')
-                    format.set_font_color('green')
-                    worksheet1.write(row, col, 'g', format)
-                if item.text() == "r":
+                    format.set_font_color('white')
+                elif item.background().color()==Qt.red:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(red)])
                     format.set_bg_color('red')
-                    format.set_font_color('red')
-                    worksheet1.write(row, col, 'r', format)
-                if item.text() == "d":
+                    format.set_font_color('white')
+                elif item.background().color()==Qt.darkGray:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(gray)])
                     format.set_bg_color('gray')
-                    format.set_font_color('gray')
-                    worksheet1.write(row, col, 'd', format)
-                # if item is not None:
-                # rowData.append(item.text())
-                # worksheet1.write(row,col,item.text())
-                # else:
-                # rowData.append('1')
-                #   worksheet1.write(row, col, '1')
+                    format.set_font_color('white')
+                else: #색상 없는 셀도 방향 정보 생김
+                    format.set_bg_color('white')
+                    format.set_font_color('black')
+                if item.text()=="↑":
+                    worksheet1.write(row, col, "↑", format)
+                    sql = "CALL updateCellDirection(%s, 1, 0, 0, 0);"
+                    cur.execute(sql, [cell_num])
+                elif item.text()=="↓":
+                    worksheet1.write(row, col, "↓", format)
+                    sql = "CALL updateCellDirection(%s, 0, 1, 0, 0);"
+                    cur.execute(sql, [cell_num])
+                elif item.text() == "←":
+                    worksheet1.write(row, col, "←", format)
+                    sql = "CALL updateCellDirection(%s, 0, 0, 1, 0);"
+                    cur.execute(sql, [cell_num])
+                elif item.text() == "→":
+                    worksheet1.write(row, col, "→", format)
+                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    cur.execute(sql, [cell_num])
+                else:
+                    worksheet1.write(row, col, "", format)
                 sql = "SELECT CellStatus FROM cell " + "WHERE Cell_ID = %s"
                 cur.execute(sql, [cell_num])
                 Cstatus = cur.fetchone()
@@ -613,6 +607,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                     BUFnum += 1
                     sql = "CALL createBuffer(%s, %s, %s);"
                     cur.execute(sql, [file_name, cell_num, BUF_num])
+                #색상 없는 셀 도 방향 정보 추가 해야합니다
         workbook.close()
         self.close()
 
@@ -626,34 +621,27 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         self.setWindowTitle("새 파일 만들기 - 그리드 설정")
         self.setFixedSize(1000, 550)
         self.show()
-        # self.cb1.activated[str].connect(self.onActivated
         self.cb1.activated[int].connect(self.selectone)
         self.cb2.activated[int].connect(self.selecttwo)
         self.cb3.activated[int].connect(self.selectthr)
         self.cb4.activated[int].connect(self.selectfour)
         self.gridNext.clicked.connect(self.btn_next_to_setattribute)  # gridNext button 클릭
 
-    # def onActivated(self, text):
-    #    size_len=text
     def selectone(self, int):
         global size_len
         size_len = int
-        # print(size_len)
 
     def selecttwo(self, int):
         global size_wid
         size_wid = int
-        # print(size_wid)
 
     def selectthr(self, int):
         global count_len
         count_len = int
-        # print(count_len)
 
     def selectfour(self, int):
         global count_wid
         count_wid = int
-        # print(count_wid)
 
     # -gridNext button 함수: setAttribute.ui로 창전환, DB저장
     def btn_next_to_setattribute(self, text):
@@ -661,7 +649,6 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         self.hide()
         self.second = thirdwindow()
         self.second.exec()
-
         # self.show()
 
 
@@ -673,7 +660,6 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
         self.setupUi(self)
         self.setWindowTitle("새 파일 만들기 - 셀 설정")
         self.setFixedSize(1000, 550)
-        # i_charge=0
         global i_charge, i_chute, i_ws, i_buf, i_blk
         i_charge = 0
         i_chute = 0
@@ -696,36 +682,29 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
     def selectone(self, int):
         global count_charge
         count_charge = int
-        # print(count_charge)
 
     def selecttwo(self, int):
         global count_chute
         count_chute = int
-        # print(count_chute)
 
     def selectthr(self, int):
         global count_ws
         count_ws = int
-        # print(count_ws)
 
     def selectfour(self, int):
         global count_buf
         count_buf = int
-        # print(count_buf)
 
     def selectfive(self, int):
         global count_blk
         count_blk = int
-        # print(count_blk)
 
-    # darkGray, red, magenta, green, yellow, blue
     def btn_charge_color(self):
         # 버튼 클릭시 색상 변경 위한 변수(여러 색상)
         global i_charge
         global color_charge
         if i_charge == 5:
             i_charge = 0
-        # print(i_charge)
         if i_charge == 0:
             self.btn1.setStyleSheet('background:yellow')
             color_charge = "yellow"
@@ -749,7 +728,6 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
         global color_chute
         if i_chute == 5:
             i_chute = 0
-        # print(i_chute)
         if i_chute == 0:
             self.btn2.setStyleSheet('background:yellow')
             color_chute = "yellow"
@@ -773,7 +751,6 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
         global color_ws
         if i_ws == 5:
             i_ws = 0
-        # print(i_ws)
         if i_ws == 0:
             self.btn3.setStyleSheet('background:yellow')
             color_ws = "yellow"
@@ -797,7 +774,6 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
         global color_buf
         if i_buf == 5:
             i_buf = 0
-        # print(i_buf)
         if i_buf == 0:
             self.btn4.setStyleSheet('background:yellow')
             color_buf = "yellow"
@@ -821,7 +797,6 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
         global color_blk
         if i_blk == 5:
             i_blk = 0
-        # print(i_blk)
         if i_blk == 0:
             self.btn5.setStyleSheet('background:yellow')
             color_blk = "yellow"
@@ -858,7 +833,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         self.setWindowTitle("새 파일 만들기 - 맵 그리기")
         self.setFixedSize(1000, 550)
         self.table = QTableWidget(parent)
-        # self._mainwin=parent
         vbox = QVBoxLayout()
         vbox.addWidget(self.table)
         grid = QGridLayout()
@@ -874,34 +848,38 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         block = QPushButton("블락")
         grid.addWidget(block, 1, 1)
         trash = QPushButton("삭제")
-        grid.addWidget(trash, 0, 5)
+        grid.addWidget(trash, 0, 8)
         clear = QPushButton("초기화")
-        grid.addWidget(clear, 1, 5)
+        grid.addWidget(clear, 1, 8)
         addrow = QPushButton("row추가")
-        grid.addWidget(addrow, 0, 3)
+        grid.addWidget(addrow, 0, 6)
         addcol = QPushButton("col추가")
-        grid.addWidget(addcol, 0, 4)
+        grid.addWidget(addcol, 0, 7)
         delrow = QPushButton("row삭제")
-        grid.addWidget(delrow, 1, 3)
+        grid.addWidget(delrow, 1, 6)
         delcol = QPushButton("col삭제")
-        grid.addWidget(delcol, 1, 4)
+        grid.addWidget(delcol, 1, 7)
         save = QPushButton("저장")
-        grid.addWidget(save, 2, 6)
+        grid.addWidget(save, 2, 9)
+        north = QPushButton("↑")
+        grid.addWidget(north, 0, 4)
+        south = QPushButton("↓")
+        grid.addWidget(south, 2, 4)
+        west = QPushButton("←")
+        grid.addWidget(west, 1, 3)
+        east = QPushButton("→")
+        grid.addWidget(east, 1, 5)
         self.setLayout(vbox)
         self.setGeometry(200, 200, 400, 500)
-        # self.table.setSelectionMode(QAbstractItemView.SingleSelection)
-        # self.table.setSelectionBehavior(QAbstractItemView.SelectItems)
-        # self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)  # edit 금지 모드,default
-        # self.table.setEditTriggers(QAbstractItemView.AllEditTriggers)  # e
         self.table.setColumnCount(int(count_len))
         self.table.setRowCount(int(count_wid))
-        # 반드시 item 생성해야 셀 색상 변경가능
         for i in range(int(count_wid)):
             for j in range(int(count_len)):
                 self.table.setItem(i, j, QTableWidgetItem())
+                #self.table.item(i , j).setBackground(Qt.white)
+                #self.table.item(i, j).setForeground(Qt.black)
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
-        # self.table.selectionModel().selectionChanged.connect(self.on_selection)
         charge.clicked.connect(self.btn_charge)  # charge button 클릭
         chute.clicked.connect(self.btn_chute)  # chute button 클릭
         ws.clicked.connect(self.btn_ws)  # ws button 클릭
@@ -914,215 +892,189 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         delrow.clicked.connect(self.btn_delrow)  # delRow button 클릭
         delcol.clicked.connect(self.btn_delcol)  # delCol button 클릭
         save.clicked.connect(self.btn_save_map)  # saveMap button 클릭
+        north.clicked.connect(self.btn_north)
+        south.clicked.connect(self.btn_south)
+        west.clicked.connect(self.btn_west)
+        east.clicked.connect(self.btn_east)
         self.show()
 
-    # def on_selection(self,selected):
-    #    for ix in selected.indexes():
-    #        print('select row: {0}, col: {1}'.format(ix.row(),ix.column()))
+    def btn_north(self):
+        for ix in self.table.selectedIndexes():
+            self.table.item(ix.row(),ix.column()).setText("↑")
+    def btn_south(self):
+        for ix in self.table.selectedIndexes():
+            self.table.item(ix.row(),ix.column()).setText("↓")
+    def btn_west(self):
+        for ix in self.table.selectedIndexes():
+            self.table.item(ix.row(),ix.column()).setText("←")
+    def btn_east(self):
+        for ix in self.table.selectedIndexes():
+            self.table.item(ix.row(),ix.column()).setText("→")
+
     #@pyqtSlot()
     def btn_charge(self):
         global yellow, red, green, blue, gray
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_charge == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 1
             elif i_charge == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 1
             elif i_charge == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 1
             elif i_charge == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 1
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 1
 
-    #@pyqtSlot()
     def btn_chute(self):
         global yellow, red, green, blue, gray
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_chute == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 2
             elif i_chute == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 2
             elif i_chute == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 2
             elif i_chute == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 3
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 2
 
-    #@pyqtSlot()
     def btn_ws(self):
         global yellow, red, green, blue, gray
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_ws == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 3
             elif i_ws == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 3
             elif i_ws == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 3
             elif i_ws == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 3
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 3
 
-    #@pyqtSlot()
     def btn_buffer(self):
         global yellow, red, green, blue, gray
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_buf == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 4
             elif i_buf == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 4
             elif i_buf == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 4
             elif i_buf == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 4
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 4
 
-    #@pyqtSlot()
     def btn_block(self):
         global yellow, red, green, blue, gray
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             if i_blk == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
-                self.table.item(ix.row(), ix.column()).setText("y")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.yellow)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
                 yellow = 5
             elif i_blk == 2:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.red)
-                self.table.item(ix.row(), ix.column()).setText("r")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.red)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 5
             elif i_blk == 3:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
-                self.table.item(ix.row(), ix.column()).setText("g")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 5
             elif i_blk == 4:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkBlue)
-                self.table.item(ix.row(), ix.column()).setText("b")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkBlue)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 blue = 5
             else:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
-                self.table.item(ix.row(), ix.column()).setText("d")
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.darkGray)
+                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 5
 
-    #@pyqtSlot()
     def btn_trash(self):
         for ix in self.table.selectedIndexes():
-            # print('s r:{0},c:{1}'.format(ix.row(),ix.column()))
             self.table.item(ix.row(), ix.column()).setBackground(Qt.white)
             self.table.item(ix.row(), ix.column()).setText("")
+            self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_clear(self):
-        # self.table.clear()
-        # 색상 변경 위한 item 추가
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         for i in range(row_count):
             for j in range(col_count):
                 self.table.item(i, j).setBackground(Qt.white)
                 self.table.item(i, j).setText("")
-                # self.table.setItem(i, j, QTableWidgetItem())#
+                self.table.item(i, j).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_addcol(self):
         global temp_count_len
         temp_count_len += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         self.table.insertColumn(col_count)  # 새로운 행 count
-        # 셀 색상 변경 위해 item 추가
         for i in range(row_count):
             self.table.setItem(i, col_count, QTableWidgetItem())
+            self.table.item(i, col_count).setBackground(Qt.white)
+            self.table.item(i, col_count).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_addrow(self):
         global temp_count_wid
         temp_count_wid += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         self.table.insertRow(row_count)
-        # 셀 색상 변경 위해 item 추가
         for j in range(col_count):
             self.table.setItem(row_count, j, QTableWidgetItem())
+            self.table.item(row_count, j).setBackground(Qt.white)
+            self.table.item(row_count, j).setForeground(Qt.black)
 
-    #@pyqtSlot()
     def btn_delcol(self):
         global temp_count_len
         temp_count_len -= 1
         col_count = self.table.columnCount()
         self.table.removeColumn(col_count - 1)
 
-    #@pyqtSlot()
     def btn_delrow(self):
         global temp_count_wid
         temp_count_wid -= 1
@@ -1136,15 +1088,13 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         global count_charge, count_chute, count_ws, count_buf, count_blk # 특수 셀 개수
         global i_charge, i_chute, i_ws, i_buf, i_blk # 특수 셀 색
 
-        # 저장할 파일 이름 지정위해 추가
         file = QFileDialog.getSaveFileName(self, '', '', 'xlsx Files(*.xlsx)')
         workbook = xlsxwriter.Workbook(file[0])  # 지정 파일 이름
         worksheet1 = workbook.add_worksheet('NewSheet1')
-        # worksheet1.write
         
         file_name = QFileInfo(file[0]).baseName()
         
-        #그리드 생성
+        #그리드 테이블 생성
         sql = "CALL createGrid(%s, %s, %s, %s, %s);"
         cur.execute(sql, [str(file_name), temp_count_len, temp_count_wid, size_len, size_wid])
 
@@ -1161,7 +1111,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         BUFnum = 1
 
         for row in range(self.table.rowCount()):
-            # rowData=[]
             for col in range(self.table.columnCount()):
                 cell_num = str(file_name) + '_c' + str(cnum).zfill(4)            
                 cnum += 1
@@ -1171,46 +1120,56 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                 cur.execute(sql, [str(file_name), cell_num, str(row), str(col)])
                 
                 item = self.table.item(row, col)
-                # worksheet1.write(row, col, item.text())
                 format = workbook.add_format()
                 
                 #DB에 특수 셀 색상 정보 업데이트
-                if item.text() == "y":
+                if item.background().color()==Qt.yellow:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(yellow)])
                     format.set_bg_color('yellow')
-                    format.set_font_color('yellow')
-                    worksheet1.write(row, col, 'y', format)
-                if item.text() == "b":
+                    format.set_font_color('black')
+                elif item.background().color() == Qt.darkBlue:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(blue)])
                     format.set_bg_color('blue')
-                    format.set_font_color('blue')
-                    worksheet1.write(row, col, 'b', format)
-                if item.text() == "g":
+                    format.set_font_color('white')
+                elif item.background().color() == Qt.darkGreen:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(green)])
                     format.set_bg_color('green')
-                    format.set_font_color('green')
-                    worksheet1.write(row, col, 'g', format)
-                if item.text() == "r":
+                    format.set_font_color('white')
+                elif item.background().color() == Qt.red:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(red)])
                     format.set_bg_color('red')
-                    format.set_font_color('red')
-                    worksheet1.write(row, col, 'r', format)
-                if item.text() == "d":
+                    format.set_font_color('white')
+                elif item.background().color() == Qt.darkGray:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(gray)])
                     format.set_bg_color('gray')
-                    format.set_font_color('gray')
-                    worksheet1.write(row, col, 'd', format)
-                # if item is not None:
-                # rowData.append(item.text())
-                # worksheet1.write(row,col,item.text())
-                # else:
-                # rowData.append('1')
-                #   worksheet1.write(row, col, '1')
+                    format.set_font_color('white')
+                else:
+                    format.set_bg_color('white')
+                    format.set_font_color('black')
+                if item.text() == "↑":
+                    worksheet1.write(row, col, "↑", format)
+                    sql = "CALL updateCellDirection(%s, 1, 0, 0, 0);"
+                    cur.execute(sql, [cell_num])
+                elif item.text() == "↓":
+                    worksheet1.write(row, col, "↓", format)
+                    sql = "CALL updateCellDirection(%s, 0, 1, 0, 0);"
+                    cur.execute(sql, [cell_num])
+                elif item.text() == "←":
+                    worksheet1.write(row, col, "←", format)
+                    sql = "CALL updateCellDirection(%s, 0, 0, 1, 0);"
+                    cur.execute(sql, [cell_num])
+                elif item.text() == "→":
+                    worksheet1.write(row, col, "→", format)
+                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    cur.execute(sql, [cell_num])
+                else:
+                    worksheet1.write(row, col, "", format)
+
                 sql = "SELECT CellStatus FROM cell " + "WHERE Cell_ID = %s;"
                 cur.execute(sql, [cell_num])
                 Cstatus = cur.fetchone()
@@ -1235,19 +1194,14 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                     sql = "CALL createBuffer(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, BUF_num])
 
-            # worksheet1.write_row(row,rowData)
-            
         workbook.close()
         self.close()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    #app.setStyle(QStyleFactory.create('Fusion'))
     myWindow = WindowClass()
-    # fwin=fourthwindow()
     myWindow.show()
-    # fwin.show()
     app.exec()
 
 conn.close()
