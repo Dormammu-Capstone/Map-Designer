@@ -118,8 +118,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
 
         # 파일 이름으로 db에서 해당 정보 연결
         file_name = QFileInfo(file[0]).baseName()
-        sql = "CALL deleteProject('p1'); CALL createProject('p1', NULL, NULL, NULL); CALL createSimul('p1', 's1'); CALL updateSimulName(%s, 's1');"
-        cur.execute(sql, [str(file_name)])
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.table)
