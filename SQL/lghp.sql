@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `buffer` (
   CONSTRAINT `FK__buffer_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.buffer:~0 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.buffer:~7 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `buffer` DISABLE KEYS */;
 /*!40000 ALTER TABLE `buffer` ENABLE KEYS */;
 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `cell` (
   CONSTRAINT `FK_cell_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.cell:~6 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.cell:~93 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `cell` DISABLE KEYS */;
 /*!40000 ALTER TABLE `cell` ENABLE KEYS */;
 
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `chargingstation` (
   CONSTRAINT `FK_chargingstation_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.chargingstation:~6 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.chargingstation:~8 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `chargingstation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `chargingstation` ENABLE KEYS */;
 
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `chute` (
   CONSTRAINT `FK_chute_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.chute:~0 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.chute:~10 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `chute` DISABLE KEYS */;
 /*!40000 ALTER TABLE `chute` ENABLE KEYS */;
 
@@ -458,7 +458,7 @@ CREATE TABLE IF NOT EXISTS `grid` (
   CONSTRAINT `FK_grid_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.grid:~1 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.grid:~3 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `grid` DISABLE KEYS */;
 /*!40000 ALTER TABLE `grid` ENABLE KEYS */;
 
@@ -604,7 +604,6 @@ DELIMITER ;
 -- 프로시저 lghpdb.updateCellDirection 구조 내보내기
 DELIMITER //
 CREATE PROCEDURE `updateCellDirection`(
-	IN `mySimul_ID` VARCHAR(50),
 	IN `myCell_ID` VARCHAR(50),
 	IN `myND` INT,
 	IN `mySD` INT,
@@ -618,7 +617,7 @@ SET NorthDirection = myND,
 SouthDirection = mySD,
 WestDirection = myWD,
 EastDirection = myED
-WHERE Cell_ID = myCell_ID && Simul_ID = mySimul_ID;
+WHERE Cell_ID = myCell_ID;
 END//
 DELIMITER ;
 
@@ -1017,7 +1016,7 @@ CREATE TABLE IF NOT EXISTS `workstation` (
   CONSTRAINT `FK_workstation_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.workstation:~0 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.workstation:~8 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `workstation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `workstation` ENABLE KEYS */;
 
