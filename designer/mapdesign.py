@@ -20,7 +20,7 @@ import random
 
 from PySide6 import *
 from PySide6.QtCore import QFileInfo
-from PySide6.QtGui import Qt
+from PySide6.QtGui import Qt, QPixmap, QIcon, QBrush, QFont, QColor
 from PySide6.QtUiTools import loadUiType
 import random
 
@@ -30,9 +30,15 @@ from PyQt5.uic.properties import QtGui
 
 import pymysql
 from PySide6.QtWidgets import QMainWindow, QDialog, QWidget, QFileDialog, QTableWidget, QVBoxLayout, QGridLayout, \
-    QPushButton, QTableWidgetItem, QApplication
+    QPushButton, QTableWidgetItem, QApplication, QLabel
 
 from pymysql.constants import CLIENT
+
+current_path = os.path.dirname(os.path.abspath(__file__))
+r_path = os.path.join(current_path, "image", "r_arrow.png")
+u_path = os.path.join(current_path, "image", "u_arrow.png")
+l_path = os.path.join(current_path, "image", "l_arrow.png")
+d_path = os.path.join(current_path, "image", "d_arrow.png")
 
 conn = None
 cur = None
@@ -46,40 +52,60 @@ def resource_path(relative_path):
     base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
+# 이미지랑 텍스트 넣기
+
+
+def dir_img(path, text):
+    pixmap = QPixmap(path)
+    pixmap.scaled(1, 1)
+    icon = QIcon(pixmap)
+    item = QTableWidgetItem()
+    item.setText(text)
+    item.setIcon(icon)
+    font = QFont()
+    font.setPointSize(1)
+    item.setFont(font)
+    item.setForeground(QBrush(Qt.transparent))
+    item.setTextAlignment(Qt.AlignCenter)
+    return item
+
 
 # 1.homePage.ui
 form = resource_path('homePage.ui')  # 여기에 ui파일명 입력
-#form_class = uic.loadUiType(form)[0]
+# form_class = uic.loadUiType(form)[0]
 form_class = loadUiType(form)[0]
 # 2.setGrid.ui
 form_second = resource_path('setGrid.ui')
-#form_secondwindow = uic.loadUiType(form_second)[0]
+# form_secondwindow = uic.loadUiType(form_second)[0]
 form_secondwindow = loadUiType(form_second)[0]
 # 3.setAttribute.ui
 form_third = resource_path('setAttribute.ui')
-#form_thirdwindow = uic.loadUiType(form_third)[0]
+# form_thirdwindow = uic.loadUiType(form_third)[0]
 form_thirdwindow = loadUiType(form_third)[0]
 # 4.createMap.ui
 form_fourth = resource_path('createMap.ui')
-#form_fourthwindow = uic.loadUiType(form_fourth)[0]
+# form_fourthwindow = uic.loadUiType(form_fourth)[0]
 form_fourthwindow = loadUiType(form_fourth)[0]
 # 5.viewFile.ui
 form_fifth = resource_path('viewFile.ui')
-#form_fifthwindow = uic.loadUiType(form_fifth)[0]
+# form_fifthwindow = uic.loadUiType(form_fifth)[0]
 form_fifthwindow = loadUiType(form_fifth)[0]
 # 6.sixthFile.ui
 form_sixth = resource_path('editFile.ui')
-#form_sixthwindow = uic.loadUiType(form_sixth)[0]
+# form_sixthwindow = uic.loadUiType(form_sixth)[0]
 form_sixthwindow = loadUiType(form_sixth)[0]
 
 # 1.homePage.ui
+
+
 class WindowClass(QMainWindow, form_class):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("맵 디자인")
         self.setFixedSize(1000, 550)
-        self.createFile.clicked.connect(self.btn_createfile_to_setgrid)  # createFile button 클릭
+        self.createFile.clicked.connect(
+            self.btn_createfile_to_setgrid)  # createFile button 클릭
         self.openFile.clicked.connect(self.btn_fileLoad)  # openFile button 클릭
 
     # 여기에 시그널-슬롯 연결 설정 및 함수 설정.
@@ -109,7 +135,8 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         self.setWindowTitle("맵 미리보기")
         self.show()  # 파일선택후 창이 앞으로 띄워지게 하기위해 위에 위치
         self.setFixedSize(1000, 550)
-        file = QFileDialog.getOpenFileName(self, '', '', 'xlsx파일 (*.xlsx);; All File(*)')  # !!저장파일 타입 정해지면, 확장자에 추가
+        file = QFileDialog.getOpenFileName(
+            self, '', '', 'xlsx파일 (*.xlsx);; All File(*)')  # !!저장파일 타입 정해지면, 확장자에 추가
         global filename  # 선언, 할당 분리
         filename = file[0]
         load_xlsx = openpyxl.load_workbook(file[0], data_only=True)
@@ -136,7 +163,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         row = int(file_row[0])
         col = int(file_col[0])
 
-
         self.table.setColumnCount(col)
         self.table.setRowCount(row)
         # 반드시 item 생성해야 셀 색상 변경가능
@@ -146,6 +172,7 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
         # load_excel은 1부터, table은 0부터
+
         cnum = 1
         for i in range(1, row + 1):
             for j in range(1, col + 1):
@@ -157,31 +184,38 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
                 cellinfo = cur.fetchone()
                 # n:6 s:7 w:8 e:9
                 if cellinfo[6] == 1:
-                    self.table.item(i - 1, j - 1).setText("↑")
+                    item = dir_img(u_path, "↑")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("↑")
                 elif cellinfo[7] == 1:
-                    self.table.item(i - 1, j - 1).setText("↓")
+                    item = dir_img(d_path, "↓")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("↓")
                 elif cellinfo[8] == 1:
-                    self.table.item(i - 1, j - 1).setText("←")
+                    item = dir_img(l_path, "←")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("←")
                 elif cellinfo[9] == 1:
-                    self.table.item(i - 1, j - 1).setText("→")
-                if load_sheet.cell(i,j).fill.start_color.index=='FFFFFF00':
+                    item = dir_img(r_path, "→")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("→")
+                if load_sheet.cell(i, j).fill.start_color.index == 'FFFFFF00':
                     self.table.item(i - 1, j - 1).setBackground(Qt.yellow)
                     self.table.item(i - 1, j - 1).setForeground(Qt.black)
-                elif load_sheet.cell(i,j).fill.start_color.index == 'FF0000FF':
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FF0000FF':
                     self.table.item(i - 1, j - 1).setBackground(Qt.darkBlue)
                     self.table.item(i - 1, j - 1).setForeground(Qt.white)
-                elif load_sheet.cell(i,j).fill.start_color.index == 'FF008000':
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FF008000':
                     self.table.item(i - 1, j - 1).setBackground(Qt.darkGreen)
                     self.table.item(i - 1, j - 1).setForeground(Qt.white)
-                elif load_sheet.cell(i,j).fill.start_color.index == 'FFFF0000':
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FFFF0000':
                     self.table.item(i - 1, j - 1).setBackground(Qt.red)
                     self.table.item(i - 1, j - 1).setForeground(Qt.white)
-                elif load_sheet.cell(i,j).fill.start_color.index == 'FF808080':
+                elif load_sheet.cell(i, j).fill.start_color.index == 'FF808080':
                     self.table.item(i - 1, j - 1).setBackground(Qt.darkGray)
                     self.table.item(i - 1, j - 1).setForeground(Qt.white)
                 else:
                     self.table.item(i - 1, j - 1).setForeground(Qt.black)
-
 
         edit.clicked.connect(self.btn_edit)
         # self.show() #파일 선택후 맵미리보기창이 뒤에 뜨게됨
@@ -190,7 +224,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         self.hide()
         self.fifth = sixthwindow()
         self.fifth.exec()
-
 
 # 6. editFile.ui
 class sixthwindow(QDialog, QWidget, form_sixthwindow):
@@ -269,13 +302,21 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 cellinfo = cur.fetchone()
                 # n:6 s:7 w:8 e:9
                 if cellinfo[6] == 1:
-                    self.table.item(i - 1, j - 1).setText("↑")
+                    item = dir_img(u_path, "↑")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("↑")
                 elif cellinfo[7] == 1:
-                    self.table.item(i - 1, j - 1).setText("↓")
+                    item = dir_img(d_path, "↓")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("↓")
                 elif cellinfo[8] == 1:
-                    self.table.item(i - 1, j - 1).setText("←")
+                    item = dir_img(l_path, "←")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("←")
                 elif cellinfo[9] == 1:
-                    self.table.item(i - 1, j - 1).setText("→")
+                    item = dir_img(r_path, "→")
+                    self.table.setItem(i - 1, j - 1, item)
+                    # self.table.item(i - 1, j - 1).setText("→")
 
 
                 if load_sheet.cell(i,j).fill.start_color.index=='FFFFFF00':
@@ -322,17 +363,40 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
             else:
                 self.table.item(ix.row(), ix.column()).setForeground(Qt.white)"""
-            self.table.item(ix.row(),ix.column()).setText("↑")
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(u_path, "↑")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("↑")
     def btn_south(self):
         for ix in self.table.selectedIndexes():
-            self.table.item(ix.row(),ix.column()).setText("↓")
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(d_path, "↓")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("↓")
     def btn_west(self):
         for ix in self.table.selectedIndexes():
-            self.table.item(ix.row(),ix.column()).setText("←")
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(l_path, "←")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("←")
     def btn_east(self):
         for ix in self.table.selectedIndexes():
-            self.table.item(ix.row(),ix.column()).setText("→")
-
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(r_path, "→")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("→")
     def btn_charge(self):
         global yellow, red, green, blue, gray, file_grid
         i_charge = file_grid[13]
@@ -912,16 +976,40 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_north(self):
         for ix in self.table.selectedIndexes():
-            self.table.item(ix.row(),ix.column()).setText("↑")
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(u_path, "↑")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("↑")
     def btn_south(self):
         for ix in self.table.selectedIndexes():
-            self.table.item(ix.row(),ix.column()).setText("↓")
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(d_path, "↓")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("↓")
     def btn_west(self):
         for ix in self.table.selectedIndexes():
-            self.table.item(ix.row(),ix.column()).setText("←")
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(l_path, "←")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("←")
     def btn_east(self):
         for ix in self.table.selectedIndexes():
-            self.table.item(ix.row(),ix.column()).setText("→")
+            bgcolor = self.table.item(
+                ix.row(), ix.column()).background().color()
+            item = dir_img(r_path, "→")
+            self.table.setItem(ix.row(), ix.column(), item)
+            if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
+                self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+            # self.table.item(ix.row(),ix.column()).setText("→")
 
     #@pyqtSlot()
     def btn_charge(self):
