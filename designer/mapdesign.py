@@ -146,16 +146,23 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
         # load_excel은 1부터, table은 0부터
+        cnum = 1
         for i in range(1, row + 1):
             for j in range(1, col + 1):
                 print(load_sheet.cell(i, j).fill.start_color.index)
-                if load_sheet.cell(i, j).value == "↑":
+                cell_num = str(file_name) + '_c' + str(cnum).zfill(4)
+                cnum = cnum + 1
+                sql = "SELECT * FROM cell " + "WHERE Cell_ID = %s;"
+                cur.execute(sql, [cell_num])
+                cellinfo = cur.fetchone()
+                # n:6 s:7 w:8 e:9
+                if cellinfo[6] == 1:
                     self.table.item(i - 1, j - 1).setText("↑")
-                elif load_sheet.cell(i, j).value == "↓":
+                elif cellinfo[7] == 1:
                     self.table.item(i - 1, j - 1).setText("↓")
-                elif load_sheet.cell(i, j).value == "←":
+                elif cellinfo[8] == 1:
                     self.table.item(i - 1, j - 1).setText("←")
-                elif load_sheet.cell(i, j).value == "→":
+                elif cellinfo[9] == 1:
                     self.table.item(i - 1, j - 1).setText("→")
                 if load_sheet.cell(i,j).fill.start_color.index=='FFFFFF00':
                     self.table.item(i - 1, j - 1).setBackground(Qt.yellow)
@@ -252,15 +259,22 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
         # load_excel은 1부터, table은 0부터
+        cnum = 1
         for i in range(1, row + 1):
             for j in range(1, col + 1):
-                if load_sheet.cell(i, j).value == "↑":
+                cell_num = str(file_name) + '_c' + str(cnum).zfill(4)
+                cnum = cnum + 1
+                sql = "SELECT * FROM cell " + "WHERE Cell_ID = %s;"
+                cur.execute(sql, [cell_num])
+                cellinfo = cur.fetchone()
+                # n:6 s:7 w:8 e:9
+                if cellinfo[6] == 1:
                     self.table.item(i - 1, j - 1).setText("↑")
-                elif load_sheet.cell(i, j).value == "↓":
+                elif cellinfo[7] == 1:
                     self.table.item(i - 1, j - 1).setText("↓")
-                elif load_sheet.cell(i, j).value == "←":
+                elif cellinfo[8] == 1:
                     self.table.item(i - 1, j - 1).setText("←")
-                elif load_sheet.cell(i, j).value == "→":
+                elif cellinfo[9] == 1:
                     self.table.item(i - 1, j - 1).setText("→")
 
 
