@@ -50,7 +50,7 @@ zero_path = os.path.join(current_path, "image", "zero.png")
 conn = None
 cur = None
 
-conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='1290', db='lghpdb', charset='utf8',
+conn = pymysql.connect(host='127.0.0.1', port=3307, user='root', password='dormammu', db='lghpdb', charset='utf8',
                        client_flag=CLIENT.MULTI_STATEMENTS, autocommit=True)
 cur = conn.cursor()
 
@@ -206,39 +206,39 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
                 cellinfo = cur.fetchone()
                 # n:6 s:7 w:8 e:9
                 if cellinfo[6] == 1:
-                    item = dir_img(u_path, "↑")
-                    self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("↑")
+                    if cellinfo[7] == 1:
+                        item = dir_img(u_d_path, "↕")
+                        self.table.setItem(i - 1, j - 1, item)
+                    elif cellinfo[8] == 1:
+                        item = dir_img(u_l_path, "←↑")
+                        self.table.setItem(i - 1, j - 1, item)
+                    elif cellinfo[9] == 1:
+                        item = dir_img(u_r_path, "↑→")
+                        self.table.setItem(i - 1, j - 1, item)
+                    else :
+                        item = dir_img(u_path, "↑")
+                        self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[7] == 1:
-                    item = dir_img(d_path, "↓")
-                    self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("↓")
+                    if cellinfo[8] == 1:
+                        item = dir_img(d_l_path, "←↓")
+                        self.table.setItem(i - 1, j - 1, item)
+                    elif cellinfo[9] == 1:
+                        item = dir_img(d_r_path, "↓→")
+                        self.table.setItem(i - 1, j - 1, item)
+                    else:
+                        item = dir_img(d_path, "↓")
+                        self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[8] == 1:
-                    item = dir_img(l_path, "←")
-                    self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("←")
+                    if cellinfo[9] == 1:
+                        item = dir_img(r_l_path, "↔")
+                        self.table.setItem(i - 1, j - 1, item)
+                    else:
+                        item = dir_img(l_path, "←")
+                        self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[9] == 1:
                     item = dir_img(r_path, "→")
                     self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("→")
-                """elif load_sheet.cell(i, j).text()=="←↓": #db로 바꾸기
-                    item = dir_img(d_l_path, "←↓")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↓→": #db로 바꾸기
-                    item = dir_img(d_r_path, "↓→")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↔": #db로 바꾸기
-                    item = dir_img(r_l_path, "↔")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↕": #db로 바꾸기
-                    item = dir_img(u_d_path, "↕")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="←↑": #db로 바꾸기
-                    item = dir_img(u_l_path, "←↑")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↑→": #db로 바꾸기
-                    item = dir_img(u_r_path, "↑→")
-                    self.table.setItem(i - 1, j - 1, item)"""
+                    
                 if load_sheet.cell(i, j).fill.start_color.index == 'FFFFFF00':
                     self.table.item(i - 1, j - 1).setBackground(Qt.yellow)
                     self.table.item(i - 1, j - 1).setForeground(Qt.black)
@@ -355,39 +355,38 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 cellinfo = cur.fetchone()
                 # n:6 s:7 w:8 e:9
                 if cellinfo[6] == 1:
-                    item = dir_img(u_path, "↑")
-                    self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("↑")
+                    if cellinfo[7] == 1:
+                        item = dir_img(u_d_path, "↕")
+                        self.table.setItem(i - 1, j - 1, item)
+                    elif cellinfo[8] == 1:
+                        item = dir_img(u_l_path, "←↑")
+                        self.table.setItem(i - 1, j - 1, item)
+                    elif cellinfo[9] == 1:
+                        item = dir_img(u_r_path, "↑→")
+                        self.table.setItem(i - 1, j - 1, item)
+                    else :
+                        item = dir_img(u_path, "↑")
+                        self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[7] == 1:
-                    item = dir_img(d_path, "↓")
-                    self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("↓")
+                    if cellinfo[8] == 1:
+                        item = dir_img(d_l_path, "←↓")
+                        self.table.setItem(i - 1, j - 1, item)
+                    elif cellinfo[9] == 1:
+                        item = dir_img(d_r_path, "↓→")
+                        self.table.setItem(i - 1, j - 1, item)
+                    else:
+                        item = dir_img(d_path, "↓")
+                        self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[8] == 1:
-                    item = dir_img(l_path, "←")
-                    self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("←")
+                    if cellinfo[9] == 1:
+                        item = dir_img(r_l_path, "↔")
+                        self.table.setItem(i - 1, j - 1, item)
+                    else:
+                        item = dir_img(l_path, "←")
+                        self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[9] == 1:
                     item = dir_img(r_path, "→")
                     self.table.setItem(i - 1, j - 1, item)
-                    # self.table.item(i - 1, j - 1).setText("→")
-                """elif load_sheet.cell(i, j).text()=="←↓": #db로 바꾸기
-                    item = dir_img(d_l_path, "←↓")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↓→": #db로 바꾸기
-                    item = dir_img(d_r_path, "↓→")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↔": #db로 바꾸기
-                    item = dir_img(r_l_path, "↔")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↕": #db로 바꾸기
-                    item = dir_img(u_d_path, "↕")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="←↑": #db로 바꾸기
-                    item = dir_img(u_l_path, "←↑")
-                    self.table.setItem(i - 1, j - 1, item)
-                elif load_sheet.cell(i, j).text()=="↑→": #db로 바꾸기
-                    item = dir_img(u_r_path, "↑→")
-                    self.table.setItem(i - 1, j - 1, item)"""
                 if load_sheet.cell(i, j).fill.start_color.index == 'FFFFFF00':
                     self.table.item(i - 1, j - 1).setBackground(Qt.yellow)
                     self.table.item(i - 1, j - 1).setForeground(Qt.black)
@@ -792,33 +791,33 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                     worksheet1.write(row, col, "→", format)
                     sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
                     cur.execute(sql, [cell_num])
-                else:
-                    worksheet1.write(row, col, "", format)
-                """디비 추가
+                # 디비 추가
                 elif item.text() == "↑→":
                     worksheet1.write(row, col, "↑→", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 1, 0, 0, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↓→":
                     worksheet1.write(row, col, "↓→", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 1, 0, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "←↓":
                     worksheet1.write(row, col, "←↓", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "←↑":
                     worksheet1.write(row, col, "←↑", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↔":
                     worksheet1.write(row, col, "↔", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 0, 1, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↕":
                     worksheet1.write(row, col, "↕", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
-                    cur.execute(sql, [cell_num])"""
+                    sql = "CALL updateCellDirection(%s, 1, 1, 0, 0);"
+                    cur.execute(sql, [cell_num])
+                else:
+                    worksheet1.write(row, col, "", format)
 
                 sql = "SELECT CellStatus FROM cell " + "WHERE Cell_ID = %s"
                 cur.execute(sql, [cell_num])
@@ -1501,33 +1500,33 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                     worksheet1.write(row, col, "→", format)
                     sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
                     cur.execute(sql, [cell_num])
-                else:
-                    worksheet1.write(row, col, "", format)
-                """디비 추가
+                # 디비 추가
                 elif item.text() == "↑→":
                     worksheet1.write(row, col, "↑→", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 1, 0, 0, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↓→":
                     worksheet1.write(row, col, "↓→", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 1, 0, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "←↓":
                     worksheet1.write(row, col, "←↓", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "←↑":
                     worksheet1.write(row, col, "←↑", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↔":
                     worksheet1.write(row, col, "↔", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
+                    sql = "CALL updateCellDirection(%s, 0, 0, 1, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↕":
                     worksheet1.write(row, col, "↕", format)
-                    sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
-                    cur.execute(sql, [cell_num])"""
+                    sql = "CALL updateCellDirection(%s, 1, 1, 0, 0);"
+                    cur.execute(sql, [cell_num])
+                else:
+                    worksheet1.write(row, col, "", format)
 
 
 
