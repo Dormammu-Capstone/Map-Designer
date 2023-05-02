@@ -25,17 +25,14 @@ CREATE TABLE IF NOT EXISTS `buffer` (
   `LocationX` int(11) DEFAULT NULL,
   `LocationY` int(11) DEFAULT NULL,
   `Buffer_Status` int(11) DEFAULT 1,
-  `Simul_ID` char(10) DEFAULT NULL,
   PRIMARY KEY (`Buffer_ID`),
   KEY `FK__buffer_Grid_ID` (`Grid_ID`) USING BTREE,
-  KEY `FK__buffer_Simul_ID` (`Simul_ID`) USING BTREE,
   KEY `FK__buffer_Cell_ID` (`Cell_ID`),
   CONSTRAINT `FK__buffer_Cell_ID` FOREIGN KEY (`Cell_ID`) REFERENCES `cell` (`Cell_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK__buffer_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK__buffer_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `FK__buffer_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.buffer:~7 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.buffer:~6 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `buffer` DISABLE KEYS */;
 /*!40000 ALTER TABLE `buffer` ENABLE KEYS */;
 
@@ -52,17 +49,14 @@ CREATE TABLE IF NOT EXISTS `cell` (
   `WestDirection` int(11) DEFAULT 0,
   `EastDirection` int(11) DEFAULT 0,
   `Robot_ID` char(10) DEFAULT NULL,
-  `Simul_ID` char(10) DEFAULT NULL,
   PRIMARY KEY (`Cell_ID`),
   KEY `FK_cell_Robot_ID` (`Robot_ID`),
-  KEY `FK_cell_Simul_ID` (`Simul_ID`),
   KEY `FK_cell_Grid_ID` (`Grid_ID`),
   CONSTRAINT `FK_cell_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_cell_Robot_ID` FOREIGN KEY (`Robot_ID`) REFERENCES `robot` (`Robot_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_cell_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `FK_cell_Robot_ID` FOREIGN KEY (`Robot_ID`) REFERENCES `robot` (`Robot_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.cell:~93 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.cell:~25 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `cell` DISABLE KEYS */;
 /*!40000 ALTER TABLE `cell` ENABLE KEYS */;
 
@@ -76,17 +70,14 @@ CREATE TABLE IF NOT EXISTS `chargingstation` (
   `CS_Status` int(11) DEFAULT 1,
   `RobotDirection` int(11) DEFAULT NULL,
   `Robot_ID` varchar(50) DEFAULT NULL,
-  `Simul_ID` char(10) DEFAULT NULL,
   PRIMARY KEY (`CS_ID`),
   KEY `FK_chargingstation_Grid_ID` (`Grid_ID`) USING BTREE,
-  KEY `FK_chargingstation_Simul_ID` (`Simul_ID`),
   KEY `FK_chargingstation_Cell_ID` (`Cell_ID`),
   CONSTRAINT `FK_chargingstation_Cell_ID` FOREIGN KEY (`Cell_ID`) REFERENCES `cell` (`Cell_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_chargingstation_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_chargingstation_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `FK_chargingstation_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.chargingstation:~8 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.chargingstation:~0 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `chargingstation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `chargingstation` ENABLE KEYS */;
 
@@ -99,19 +90,17 @@ CREATE TABLE IF NOT EXISTS `chute` (
   `LocationY` int(11) DEFAULT NULL,
   `RobotDirection` int(11) DEFAULT NULL,
   `Chute_Status` int(11) DEFAULT 1,
+  `Classification` int(11) DEFAULT NULL,
   `CurrentCnt` int(11) DEFAULT 0,
   `MaxCnt` int(11) DEFAULT NULL,
-  `Simul_ID` char(10) DEFAULT NULL,
   PRIMARY KEY (`Chute_ID`),
-  KEY `FK_chute_Simul_ID` (`Simul_ID`),
   KEY `FK_chute_Grid_ID` (`Grid_ID`),
   KEY `FK_chute_Cell_ID` (`Cell_ID`),
   CONSTRAINT `FK_chute_Cell_ID` FOREIGN KEY (`Cell_ID`) REFERENCES `cell` (`Cell_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_chute_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_chute_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `FK_chute_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.chute:~10 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.chute:~3 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `chute` DISABLE KEYS */;
 /*!40000 ALTER TABLE `chute` ENABLE KEYS */;
 
@@ -435,7 +424,6 @@ DELIMITER ;
 -- 테이블 lghpdb.grid 구조 내보내기
 CREATE TABLE IF NOT EXISTS `grid` (
   `Grid_ID` char(10) NOT NULL,
-  `Simul_ID` char(10) DEFAULT NULL,
   `GridSizeX` int(11) DEFAULT NULL,
   `GridSizeY` int(11) DEFAULT NULL,
   `CellWidth` int(11) DEFAULT NULL,
@@ -453,12 +441,10 @@ CREATE TABLE IF NOT EXISTS `grid` (
   `Buffer_Color` int(11) DEFAULT NULL,
   `Block_Color` int(11) DEFAULT NULL,
   `Service_Color` int(11) DEFAULT NULL,
-  PRIMARY KEY (`Grid_ID`),
-  KEY `FK_grid_Simul_ID` (`Simul_ID`),
-  CONSTRAINT `FK_grid_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
+  PRIMARY KEY (`Grid_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.grid:~3 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.grid:~2 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `grid` DISABLE KEYS */;
 /*!40000 ALTER TABLE `grid` ENABLE KEYS */;
 
@@ -500,6 +486,7 @@ CREATE TABLE IF NOT EXISTS `robot` (
   `LocationX` int(11) DEFAULT NULL,
   `LocationY` int(11) DEFAULT NULL,
   `Robot_Status` int(11) DEFAULT NULL,
+  `Logistics_Result` int(11) DEFAULT NULL,
   `Direction` int(11) DEFAULT NULL,
   `RobotSpeed` int(11) DEFAULT NULL,
   `Battery` int(11) DEFAULT NULL,
@@ -534,10 +521,7 @@ CREATE TABLE IF NOT EXISTS `service` (
   `LocationX` int(11) DEFAULT NULL,
   `LocationY` int(11) DEFAULT NULL,
   `Service_Status` int(11) DEFAULT 0,
-  `Simul_ID` char(10) DEFAULT NULL,
-  PRIMARY KEY (`Service_ID`),
-  KEY `FK_service_Simul_ID` (`Simul_ID`),
-  CONSTRAINT `FK_service_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`Service_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- 테이블 데이터 lghpdb.service:~0 rows (대략적) 내보내기
@@ -1006,17 +990,14 @@ CREATE TABLE IF NOT EXISTS `workstation` (
   `WS_Status` int(11) DEFAULT 1,
   `RobotDirection` int(11) DEFAULT NULL,
   `Robot_ID` varchar(50) DEFAULT NULL,
-  `Simul_ID` char(10) DEFAULT NULL,
   PRIMARY KEY (`WS_ID`),
-  KEY `FK_workstation_Simul_ID` (`Simul_ID`),
   KEY `FK_workstation_Grid_ID` (`Grid_ID`),
   KEY `FK_workstation_Cell_ID` (`Cell_ID`),
   CONSTRAINT `FK_workstation_Cell_ID` FOREIGN KEY (`Cell_ID`) REFERENCES `cell` (`Cell_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_workstation_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_workstation_Simul_ID` FOREIGN KEY (`Simul_ID`) REFERENCES `simulation` (`Simul_ID`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `FK_workstation_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.workstation:~8 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.workstation:~21 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `workstation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `workstation` ENABLE KEYS */;
 
