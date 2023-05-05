@@ -39,14 +39,18 @@ r_path = os.path.join(current_path, "image", "r_arrow.png")
 u_path = os.path.join(current_path, "image", "u_arrow.png")
 l_path = os.path.join(current_path, "image", "l_arrow.png")
 d_path = os.path.join(current_path, "image", "d_arrow.png")
-d_l_path = os.path.join(current_path, "image", "d_l_arrow.png")
-d_r_path = os.path.join(current_path, "image", "d_r_arrow.png")
 r_l_path = os.path.join(current_path, "image", "r_l_arrow.png")
 u_d_path = os.path.join(current_path, "image", "u_d_arrow.png")
-u_l_path = os.path.join(current_path, "image", "u_l_arrow.png")
-u_r_path = os.path.join(current_path, "image", "u_r_arrow.png")
 a_path = os.path.join(current_path, "image", "all_arrow.png")
 zero_path = os.path.join(current_path, "image", "zero.png")
+logo_path=os.path.join(current_path, "logo_trans_1.png")
+c_r_path = os.path.join(current_path, "image", "r_arrow_c.png")
+c_u_path = os.path.join(current_path, "image", "u_arrow_c.png")
+c_l_path = os.path.join(current_path, "image", "l_arrow_c.png")
+c_d_path = os.path.join(current_path, "image", "d_arrow_c.png")
+c_r_l_path = os.path.join(current_path, "image", "r_l_arrow_c.png")
+c_u_d_path = os.path.join(current_path, "image", "u_d_arrow_c.png")
+c_a_path = os.path.join(current_path, "image", "all_arrow_c.png")
 
 conn = None
 cur = None
@@ -59,10 +63,6 @@ cur = conn.cursor()
 def resource_path(relative_path):
     base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
-
-
-# 이미지랑 텍스트 넣기
-
 
 def dir_img(path, text):
     pixmap = QPixmap(path)
@@ -77,7 +77,6 @@ def dir_img(path, text):
     item.setForeground(QBrush(Qt.transparent))
     item.setTextAlignment(Qt.AlignCenter)
     return item
-
 
 def but_img(path):
     pixmap = QPixmap(path)
@@ -121,17 +120,17 @@ form_sixthwindow = loadUiType(form_sixth)[0]
 
 
 # 1.homePage.ui
-
-
 class WindowClass(QMainWindow, form_class):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("맵 디자인")
         self.setWindowIcon(QIcon('logo.png'))
-        self.setFixedSize(1000, 550)
+        self.setGeometry(100, 50, 1000, 550)
         self.createFile.clicked.connect(self.btn_createfile_to_setgrid)  # createFile button 클릭
         self.openFile.clicked.connect(self.btn_fileLoad)  # openFile button 클릭
+        pixmap = QPixmap(logo_path)
+        self.logolabel.setPixmap(pixmap)
 
     # 여기에 시그널-슬롯 연결 설정 및 함수 설정.
     # -createFile button 함수: setGrid.ui로 창전환
@@ -160,15 +159,15 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         self.setWindowTitle("맵 미리보기")
         self.setWindowIcon(QIcon('logo.png'))
         self.show()  # 파일선택후 창이 앞으로 띄워지게 하기위해 위에 위치
-        self.setFixedSize(1000, 550)
-        file = QFileDialog.getOpenFileName(
-            self, '', '', 'xlsx파일 (*.xlsx);; All File(*)')  # !!저장파일 타입 정해지면, 확장자에 추가
+        self.setGeometry(100, 50, 1000, 550) #파일열기 전 위치
+        file = QFileDialog.getOpenFileName(self, '', '', 'xlsx파일 (*.xlsx);; All File(*)')  # !!저장파일 타입 정해지면, 확장자에 추가
         global filename  # 선언, 할당 분리
         filename = file[0]
         load_xlsx = openpyxl.load_workbook(file[0], data_only=True)
         load_sheet = load_xlsx['NewSheet1']
         self.table = QTableWidget(parent)
-
+        self.table.setStyleSheet("background-color:white")
+        self.setStyleSheet("background-color:rgb(1,35,38);")
         # 파일 이름으로 db에서 해당 정보 연결
         file_name = QFileInfo(file[0]).baseName()
 
@@ -179,8 +178,9 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         edit = QPushButton("수 정")
         grid.addWidget(edit, 0, 0)
         self.setLayout(vbox)
-        self.setGeometry(200, 200, 400, 500)
-        edit.setStyleSheet("color: white;background-color: rgb(227, 35, 153);border-radius: 20px;")
+        self.setGeometry(100, 50, 1000, 550) #파일연 후 위치
+        edit.setFixedSize(100, 100)
+        edit.setStyleSheet("color: rgb(82,242,226);border: 5px double rgb(82,242,226);border-radius: 15px;")
         edit.setFont(QFont('나눔고딕 ExtraBold', 18))
         edit.setMinimumSize(500,40)
         sql = "SELECT GridSizeX FROM grid " + "WHERE Grid_ID = %s;"
@@ -191,7 +191,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         file_row = cur.fetchone()
         row = int(file_row[0])
         col = int(file_col[0])
-
         self.table.setColumnCount(col)
         self.table.setRowCount(row)
         # 반드시 item 생성해야 셀 색상 변경가능
@@ -205,7 +204,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         cnum = 1
         for i in range(1, row + 1):
             for j in range(1, col + 1):
-                print(load_sheet.cell(i, j).fill.start_color.index)
                 cell_num = str(file_name) + '_c' + str(cnum).zfill(4)
                 cnum = cnum + 1
                 sql = "SELECT * FROM cell " + "WHERE Cell_ID = %s;"
@@ -217,25 +215,15 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
                     if cellinfo[7] == 1:
                         item = dir_img(u_d_path, "↕")
                         self.table.setItem(i - 1, j - 1, item)
-                    elif cellinfo[8] == 1:
-                        item = dir_img(u_l_path, "←↑")
-                        self.table.setItem(i - 1, j - 1, item)
-                    elif cellinfo[9] == 1:
-                        item = dir_img(u_r_path, "↑→")
-                        self.table.setItem(i - 1, j - 1, item)
+                        if cellinfo[8] == 1:
+                            item = dir_img(a_path, "↕↔")
+                            self.table.setItem(i - 1, j - 1, item)
                     else:
                         item = dir_img(u_path, "↑")
                         self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[7] == 1:
-                    if cellinfo[8] == 1:
-                        item = dir_img(d_l_path, "←↓")
-                        self.table.setItem(i - 1, j - 1, item)
-                    elif cellinfo[9] == 1:
-                        item = dir_img(d_r_path, "↓→")
-                        self.table.setItem(i - 1, j - 1, item)
-                    else:
-                        item = dir_img(d_path, "↓")
-                        self.table.setItem(i - 1, j - 1, item)
+                    item = dir_img(d_path, "↓")
+                    self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[8] == 1:
                     if cellinfo[9] == 1:
                         item = dir_img(r_l_path, "↔")
@@ -273,13 +261,12 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         self.fifth = sixthwindow()
         self.fifth.exec()
 
-
 # 6. editFile.ui
 class sixthwindow(QDialog, QWidget, form_sixthwindow):
     def __init__(self, parent=None):
-        global temp_count_len, temp_count_wid, row, col, file_name, file_grid
-        temp_count_len = int(col)
-        temp_count_wid = int(row)
+        global temp_count_wid, temp_count_high, row, col, file_name, file_grid
+        temp_count_wid = int(col)
+        temp_count_high = int(row)
         sql = "SELECT * FROM grid " + "WHERE Grid_ID = %s;"
         cur.execute(sql, [str(file_name)])
         file_grid = cur.fetchone()
@@ -289,7 +276,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         # self.setupUi(self)
         self.setWindowTitle("맵 수정하기")
         self.setWindowIcon(QIcon('logo.png'))
-        self.setFixedSize(1000, 550)
+        self.setGeometry(100, 50, 1000, 550)
         self.table = QTableWidget(parent)
         vbox = QVBoxLayout()
         vbox.addWidget(self.table)
@@ -319,75 +306,94 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         grid.addWidget(delcol, 1, 9)
         save = QPushButton("저장")
         grid.addWidget(save, 2, 11)
-        north = but_img(u_path)
+        north = but_img(c_u_path)
         grid.addWidget(north, 0, 4, 1, 3)
-        south = but_img(d_path)
+        south = but_img(c_d_path)
         grid.addWidget(south, 2, 4, 1, 3)
-        west = but_img(l_path)
+        west = but_img(c_l_path)
         grid.addWidget(west, 1, 3)
-        east = but_img(r_path)
+        east = but_img(c_r_path)
         grid.addWidget(east, 1, 7)
-        l_r = but_img(r_l_path)
+        l_r = but_img(c_r_l_path)
         grid.addWidget(l_r, 1, 6)
-        u_d = but_img(u_d_path)
+        u_d = but_img(c_u_d_path)
         grid.addWidget(u_d, 1, 4)
-        all = but_img(a_path)
+        all = but_img(c_a_path)
         grid.addWidget(all, 1, 5)
-        #버튼 css
-        save.setStyleSheet("color: white;background-color: rgb(227, 35, 153);border-radius: 10px;")
+        # css
+        self.table.setStyleSheet("background-color:white")
+        self.setStyleSheet("background-color:rgb(1,35,38);")
+        save.setStyleSheet(
+            "color: rgb(82,242,226);background-color: rgb(86,140,140);border-radius: 10px;border: 2px solid rgb(82,242,226);")
         save.setFont(QFont('나눔고딕 ExtraBold', 13))
         save.setMinimumSize(30, 30)
-        charge.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        charge.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         charge.setFont(QFont('나눔고딕 ExtraBold', 12))
-        chute.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        chute.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         chute.setFont(QFont('나눔고딕 ExtraBold', 12))
-        ws.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        ws.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         ws.setFont(QFont('나눔고딕 ExtraBold', 12))
-        buffer.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        buffer.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         buffer.setFont(QFont('나눔고딕 ExtraBold', 12))
-        block.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        block.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         block.setFont(QFont('나눔고딕 ExtraBold', 12))
-        north.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        north.setStyleSheet(
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         north.setMinimumSize(30, 30)
-        south.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        south.setStyleSheet(
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         south.setMinimumSize(30, 30)
-        east.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        east.setStyleSheet(
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         east.setMinimumSize(30, 30)
-        west.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        west.setStyleSheet(
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         west.setMinimumSize(30, 30)
-        all.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        all.setStyleSheet(
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         all.setMinimumSize(30, 30)
-        u_d.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        u_d.setStyleSheet(
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         u_d.setMinimumSize(30, 30)
-        l_r.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        l_r.setStyleSheet(
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         l_r.setMinimumSize(30, 30)
-        trash.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        trash.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         trash.setFont(QFont('나눔고딕 ExtraBold', 12))
-        clear.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        clear.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         clear.setFont(QFont('나눔고딕 ExtraBold', 12))
-        addrow.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        addrow.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         addrow.setFont(QFont('나눔고딕 ExtraBold', 12))
-        addcol.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        addcol.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         addcol.setFont(QFont('나눔고딕 ExtraBold', 12))
-        delrow.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        delrow.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         delrow.setFont(QFont('나눔고딕 ExtraBold', 12))
-        delcol.setStyleSheet("color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+        delcol.setStyleSheet(
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         delcol.setFont(QFont('나눔고딕 ExtraBold', 12))
         self.setLayout(vbox)
-        self.setGeometry(200, 200, 400, 500)
+        self.setGeometry(100, 50, 1000, 550)
         load_xlsx = openpyxl.load_workbook(filename, data_only=True)
         load_sheet = load_xlsx['NewSheet1']
         # row = load_sheet.max_row
         # col = load_sheet.max_column
         self.table.setColumnCount(col)
         self.table.setRowCount(row)
-        # 반드시 item 생성해야 셀 색상 변경가능
         for i in range(row):
             for j in range(col):
                 self.table.setItem(i, j, QTableWidgetItem())
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
-        # load_excel은 1부터, table은 0부터
         cnum = 1
         for i in range(1, row + 1):
             for j in range(1, col + 1):
@@ -397,30 +403,20 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 cur.execute(sql, [cell_num])
                 cellinfo = cur.fetchone()
                 # n:6 s:7 w:8 e:9
-                #네방향 추가, 두방향 제거
+                # 네방향 추가, 두방향 제거
                 if cellinfo[6] == 1:
                     if cellinfo[7] == 1:
                         item = dir_img(u_d_path, "↕")
                         self.table.setItem(i - 1, j - 1, item)
-                    elif cellinfo[8] == 1:
-                        item = dir_img(u_l_path, "←↑")
-                        self.table.setItem(i - 1, j - 1, item)
-                    elif cellinfo[9] == 1:
-                        item = dir_img(u_r_path, "↑→")
-                        self.table.setItem(i - 1, j - 1, item)
+                        if cellinfo[8] == 1:
+                            item = dir_img(a_path, "↕↔")
+                            self.table.setItem(i - 1, j - 1, item)
                     else:
                         item = dir_img(u_path, "↑")
                         self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[7] == 1:
-                    if cellinfo[8] == 1:
-                        item = dir_img(d_l_path, "←↓")
-                        self.table.setItem(i - 1, j - 1, item)
-                    elif cellinfo[9] == 1:
-                        item = dir_img(d_r_path, "↓→")
-                        self.table.setItem(i - 1, j - 1, item)
-                    else:
-                        item = dir_img(d_path, "↓")
-                        self.table.setItem(i - 1, j - 1, item)
+                    item = dir_img(d_path, "↓")
+                    self.table.setItem(i - 1, j - 1, item)
                 elif cellinfo[8] == 1:
                     if cellinfo[9] == 1:
                         item = dir_img(r_l_path, "↔")
@@ -472,54 +468,39 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 
     def btn_north(self):
         for ix in self.table.selectedIndexes():
-            """if self.table.item(ix.row(),ix.column()).background().color()==Qt.white:
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
-            elif self.table.item(ix.row(),ix.column()).background().color()==Qt.yellow:
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.black)
-            else:
-                self.table.item(ix.row(), ix.column()).setForeground(Qt.white)"""
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(u_path, "↑")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("↑")
 
     def btn_south(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(d_path, "↓")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("↓")
 
     def btn_west(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(l_path, "←")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("←")
 
     def btn_east(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(r_path, "→")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("→")
 
     def btn_l_r(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(r_l_path, "↔")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -527,16 +508,15 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 
     def btn_u_d(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(u_d_path, "↕")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
+
     def btn_all(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(a_path, "↕↔")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -690,8 +670,8 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 self.table.setItem(i, j, item)
 
     def btn_addcol(self):
-        global temp_count_len
-        temp_count_len += 1
+        global temp_count_wid
+        temp_count_wid += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         self.table.insertColumn(col_count)  # 새로운 행 count
@@ -701,25 +681,24 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
             self.table.item(i, col_count).setForeground(Qt.black)
 
     def btn_addrow(self):
-        global temp_count_wid
-        temp_count_wid += 1
+        global temp_count_high
+        temp_count_high += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         self.table.insertRow(row_count)
-        # 셀 색상 변경 위해 item 추가
         for j in range(col_count):
             self.table.setItem(row_count, j, QTableWidgetItem())
             self.table.item(row_count, j).setForeground(Qt.black)
 
     def btn_delcol(self):
-        global temp_count_len
-        temp_count_len -= 1
+        global temp_count_wid
+        temp_count_wid -= 1
         col_count = self.table.columnCount()
         self.table.removeColumn(col_count - 1)
 
     def btn_delrow(self):
-        global temp_count_wid
-        temp_count_wid -= 1
+        global temp_count_high
+        temp_count_high -= 1
         row_count = self.table.rowCount()
         self.table.removeRow(row_count - 1)
 
@@ -727,11 +706,13 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
     def btn_save_map(self):
         workbook = xlsxwriter.Workbook(filename)  # 지정 파일 이름
         worksheet1 = workbook.add_worksheet('NewSheet1')
-        global yellow, red, blue, gray, green, temp_count_len, temp_count_wid, file_name, file_grid
+        global yellow, red, blue, gray, green, temp_count_wid, temp_count_high, file_name, file_grid
         sql = "CALL deleteGrid(%s); CALL createGrid(%s, %s, %s, %s, %s); CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s);"
-        cur.execute(sql, [file_name, file_name, temp_count_len, temp_count_wid, int(file_grid[4]), int(file_grid[5]),
-                          file_name, int(file_grid[7]), int(file_grid[8]), int(file_grid[9]), int(file_grid[10]),
-                          int(file_grid[11]), file_name, int(file_grid[13]), int(file_grid[14]), int(file_grid[15]),
+        cur.execute(sql, [file_name, file_name, temp_count_wid, temp_count_high, int(file_grid[4]), int(file_grid[5]),
+                          file_name, int(file_grid[7]), int(file_grid[8]), int(
+                              file_grid[9]), int(file_grid[10]),
+                          int(file_grid[11]), file_name, int(file_grid[13]), int(
+                              file_grid[14]), int(file_grid[15]),
                           int(file_grid[16]), int(file_grid[17])])
 
         for i in range(13, 18):
@@ -757,14 +738,13 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
             for col in range(self.table.columnCount()):
                 cell_num = str(file_name) + '_c' + str(cnum).zfill(4)
                 cnum += 1
-                # 셀 생성
                 sql = "CALL createCell(%s, %s, %s, %s);"
                 cur.execute(sql, [file_name, cell_num, str(row), str(col)])
                 item = self.table.item(row, col)
                 # worksheet1.write(row, col, item.text())
                 format = workbook.add_format()
                 # DB에 특수 셀 색상 정보 업데이트
-                #네방향 추가, 두방향 제거
+                # 네방향 추가, 두방향 제거
                 if item.background().color() == Qt.yellow:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(yellow)])
@@ -810,21 +790,9 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                     sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
                     cur.execute(sql, [cell_num])
                 # 디비 추가
-                elif item.text() == "↑→":
-                    worksheet1.write(row, col, "↑→", format)
-                    sql = "CALL updateCellDirection(%s, 1, 0, 0, 1);"
-                    cur.execute(sql, [cell_num])
-                elif item.text() == "↓→":
-                    worksheet1.write(row, col, "↓→", format)
-                    sql = "CALL updateCellDirection(%s, 0, 1, 0, 1);"
-                    cur.execute(sql, [cell_num])
-                elif item.text() == "←↓":
-                    worksheet1.write(row, col, "←↓", format)
-                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
-                    cur.execute(sql, [cell_num])
-                elif item.text() == "←↑":
-                    worksheet1.write(row, col, "←↑", format)
-                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
+                elif item.text() == "↕↔":
+                    worksheet1.write(row, col, "↕↔", format)
+                    sql = "CALL updateCellDirection(%s, 1, 1, 1, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↔":
                     worksheet1.write(row, col, "↔", format)
@@ -860,7 +828,6 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                     BUFnum += 1
                     sql = "CALL createBuffer(%s, %s, %s);"
                     cur.execute(sql, [file_name, cell_num, BUF_num])
-                # 색상 없는 셀 도 방향 정보 추가 해야합니다
         workbook.close()
         self.close()
 
@@ -873,38 +840,21 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         self.setupUi(self)
         self.setWindowTitle("새 파일 만들기 - 그리드 설정")
         self.setWindowIcon(QIcon('logo.png'))
-        self.setFixedSize(1000, 550)
+        self.setGeometry(100, 50, 1000, 550)
         self.show()
-        self.cb1.activated[int].connect(self.selectone)
-        self.cb2.activated[int].connect(self.selecttwo)
-        self.cb3.activated[int].connect(self.selectthr)
-        self.cb4.activated[int].connect(self.selectfour)
         self.gridNext.clicked.connect(self.btn_next_to_setattribute)  # gridNext button 클릭
-
-    def selectone(self, int):
-        global size_len
-        size_len = int
-
-    def selecttwo(self, int):
-        global size_wid
-        size_wid = int
-
-    def selectthr(self, int):
-        global count_len
-        count_len = int
-
-    def selectfour(self, int):
-        global count_wid
-        count_wid = int
 
     # -gridNext button 함수: setAttribute.ui로 창전환, DB저장
     def btn_next_to_setattribute(self, text):
-        global size_len, size_wid, count_len, count_wid
+        global size_wid, size_high, count_wid, count_high
+        size_wid =self.size_w.text()
+        size_high=self.size_h.text()
+        count_wid = self.count_w.text()
+        count_high = self.count_h.text()
         self.hide()
         self.second = thirdwindow()
         self.second.exec()
         # self.show()
-
 
 # 3.setAttribute.ui
 class thirdwindow(QDialog, QWidget, form_thirdwindow):
@@ -914,180 +864,130 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
         self.setupUi(self)
         self.setWindowTitle("새 파일 만들기 - 셀 설정")
         self.setWindowIcon(QIcon('logo.png'))
-        self.setFixedSize(1000, 550)
+        self.setGeometry(100, 50, 1000, 550)
         global i_charge, i_chute, i_ws, i_buf, i_blk
-        i_charge = 0
-        i_chute = 0
-        i_ws = 0
-        i_buf = 0
-        i_blk = 0
-        self.cb1.activated[int].connect(self.selectone)
-        self.cb2.activated[int].connect(self.selecttwo)
-        self.cb3.activated[int].connect(self.selectthr)
-        self.cb4.activated[int].connect(self.selectfour)
-        self.cb5.activated[int].connect(self.selectfive)
-        self.btn1.clicked.connect(self.btn_charge_color)
-        self.btn2.clicked.connect(self.btn_chute_color)
-        self.btn3.clicked.connect(self.btn_ws_color)
-        self.btn4.clicked.connect(self.btn_buf_color)
-        self.btn5.clicked.connect(self.btn_blk_color)
+        self.cb_charge.activated[int].connect(self.btn_charge_color)
+        self.cb_chute.activated[int].connect(self.btn_chute_color)
+        self.cb_ws.activated[int].connect(self.btn_ws_color)
+        self.cb_buffer.activated[int].connect(self.btn_buf_color)
+        self.cb_block.activated[int].connect(self.btn_blk_color)
         self.attributeNext.clicked.connect(self.btn_next_to_map)  # attributeNext button 클릭
         self.show()
 
-    def selectone(self, int):
-        global count_charge
-        count_charge = int
-
-    def selecttwo(self, int):
-        global count_chute
-        count_chute = int
-
-    def selectthr(self, int):
-        global count_ws
-        count_ws = int
-
-    def selectfour(self, int):
-        global count_buf
-        count_buf = int
-
-    def selectfive(self, int):
-        global count_blk
-        count_blk = int
-
-    def btn_charge_color(self):
-        # 버튼 클릭시 색상 변경 위한 변수(여러 색상)
-        global i_charge
-        global color_charge
-        if i_charge == 5:
-            i_charge = 0
-        if i_charge == 0:
-            self.btn1.setStyleSheet('background:yellow')
-            color_charge = "yellow"
-        if i_charge == 1:
-            self.btn1.setStyleSheet('background:red')
+    def btn_charge_color(self,int):
+        global color_charge,i_charge
+        if int == 1:
             color_charge = "red"
-        if i_charge == 2:
-            self.btn1.setStyleSheet('background:green')
+            i_charge =2
+        elif int == 2:
+            color_charge = "yellow"
+            i_charge = 1
+        elif int == 3:
             color_charge = "green"
-        if i_charge == 3:
-            self.btn1.setStyleSheet('background:blue')
+            i_charge = 3
+        elif int == 4:
             color_charge = "blue"
-        if i_charge == 4:
-            self.btn1.setStyleSheet('background:darkGray')
+            i_charge = 4
+        elif int == 5:
             color_charge = "darkGray"
-        i_charge = i_charge + 1
+            i_charge = 5
 
-    def btn_chute_color(self):
-        # 버튼 클릭시 색상 변경 위한 변수(여러 색상)
-        global i_chute
-        global color_chute
-        if i_chute == 5:
-            i_chute = 0
-        if i_chute == 0:
-            self.btn2.setStyleSheet('background:yellow')
-            color_chute = "yellow"
-        if i_chute == 1:
-            self.btn2.setStyleSheet('background:red')
+    def btn_chute_color(self,int):
+        global color_chute, i_chute
+        if int == 1:
             color_chute = "red"
-        if i_chute == 2:
-            self.btn2.setStyleSheet('background:green')
+            i_chute = 2
+        elif int == 2:
+            color_chute = "yellow"
+            i_chute = 1
+        elif int == 3:
             color_chute = "green"
-        if i_chute == 3:
-            self.btn2.setStyleSheet('background:blue')
+            i_chute = 3
+        elif int == 4:
             color_chute = "blue"
-        if i_chute == 4:
-            self.btn2.setStyleSheet('background:darkGray')
+            i_chute = 4
+        elif int == 5:
             color_chute = "darkGray"
-        i_chute = i_chute + 1
+            i_chute = 5
 
-    def btn_ws_color(self):
-        # 버튼 클릭시 색상 변경 위한 변수(여러 색상)
-        global i_ws
-        global color_ws
-        if i_ws == 5:
-            i_ws = 0
-        if i_ws == 0:
-            self.btn3.setStyleSheet('background:yellow')
-            color_ws = "yellow"
-        if i_ws == 1:
-            self.btn3.setStyleSheet('background:red')
+    def btn_ws_color(self,int):
+        global color_ws, i_ws
+        if int == 1:
             color_ws = "red"
-        if i_ws == 2:
-            self.btn3.setStyleSheet('background:green')
+            i_ws=2
+        elif int == 2:
+            color_ws = "yellow"
+            i_ws = 1
+        elif int == 3:
             color_ws = "green"
-        if i_ws == 3:
-            self.btn3.setStyleSheet('background:blue')
+            i_ws = 3
+        elif int == 4:
             color_ws = "blue"
-        if i_ws == 4:
-            self.btn3.setStyleSheet('background:darkGray')
+            i_ws = 4
+        elif int == 5:
             color_ws = "darkGray"
-        i_ws = i_ws + 1
+            i_ws = 5
 
-    def btn_buf_color(self):
-        # 버튼 클릭시 색상 변경 위한 변수(여러 색상)
-        global i_buf
-        global color_buf
-        if i_buf == 5:
-            i_buf = 0
-        if i_buf == 0:
-            self.btn4.setStyleSheet('background:yellow')
-            color_buf = "yellow"
-        if i_buf == 1:
-            self.btn4.setStyleSheet('background:red')
+    def btn_buf_color(self,int):
+        global color_buf, i_buf
+        if int == 1:
             color_buf = "red"
-        if i_buf == 2:
-            self.btn4.setStyleSheet('background:green')
+            i_buf =2
+        elif int == 2:
+            color_buf = "yellow"
+            i_buf = 1
+        elif int == 3:
             color_buf = "green"
-        if i_buf == 3:
-            self.btn4.setStyleSheet('background:blue')
+            i_buf = 3
+        elif int == 4:
             color_buf = "blue"
-        if i_buf == 4:
-            self.btn4.setStyleSheet('background:darkGray')
+            i_buf = 4
+        elif int == 5:
             color_buf = "darkGray"
-        i_buf = i_buf + 1
+            i_buf = 5
 
-    def btn_blk_color(self):
-        # 버튼 클릭시 색상 변경 위한 변수(여러 색상)
-        global i_blk
-        global color_blk
-        if i_blk == 5:
-            i_blk = 0
-        if i_blk == 0:
-            self.btn5.setStyleSheet('background:yellow')
-            color_blk = "yellow"
-        if i_blk == 1:
-            self.btn5.setStyleSheet('background:red')
+    def btn_blk_color(self,int):
+        global color_blk,i_blk
+        if int == 1:
             color_blk = "red"
-        if i_blk == 2:
-            self.btn5.setStyleSheet('background:green')
+            i_blk=2
+        elif int == 2:
+            color_blk = "yellow"
+            i_blk = 1
+        elif int == 3:
             color_blk = "green"
-        if i_blk == 3:
-            self.btn5.setStyleSheet('background:blue')
+            i_blk = 3
+        elif int == 4:
             color_blk = "blue"
-        if i_blk == 4:
-            self.btn5.setStyleSheet('background:darkGray')
+            i_blk = 4
+        elif int == 5:
             color_blk = "darkGray"
-        i_blk = i_blk + 1
+            i_blk = 5
 
     # -attributeNext button 함수: createMap.ui로 창전환
     def btn_next_to_map(self):
+        global count_charge, count_chute, count_ws, count_buf, count_blk
+        count_charge=self.cnt_charge.text()
+        count_chute=self.cnt_chute.text()
+        count_ws=self.cnt_ws.text()
+        count_buf=self.cnt_buffer.text()
+        count_blk=self.cnt_block.text()
         self.hide()
         self.third = fourthwindow()
         self.third.exec()
 
-
 # 4.createMap.ui
 class fourthwindow(QDialog, QWidget, form_fourthwindow):
     def __init__(self, parent=None):
-        global temp_count_len, temp_count_wid, count_len, count_wid
-        temp_count_len = int(count_len)
+        global temp_count_wid, temp_count_high, count_wid, count_high
         temp_count_wid = int(count_wid)
+        temp_count_high = int(count_high)
         super(fourthwindow, self).__init__()
         # self.initUi()
         # self.setupUi(self)
         self.setWindowTitle("새 파일 만들기 - 맵 그리기")
         self.setWindowIcon(QIcon('logo.png'))
-        self.setFixedSize(1000, 550)
+        self.setGeometry(100, 50, 1000, 550)
         self.table = QTableWidget(parent)
         vbox = QVBoxLayout()
         vbox.addWidget(self.table)
@@ -1117,84 +1017,86 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         grid.addWidget(delcol, 1, 9)
         save = QPushButton("저장")
         grid.addWidget(save, 2, 11)
-        north = but_img(u_path)
+        north = but_img(c_u_path)
         grid.addWidget(north, 0, 4, 1, 3)
-        south = but_img(d_path)
+        south = but_img(c_d_path)
         grid.addWidget(south, 2, 4, 1, 3)
-        west = but_img(l_path)
+        west = but_img(c_l_path)
         grid.addWidget(west, 1, 3)
-        east = but_img(r_path)
+        east = but_img(c_r_path)
         grid.addWidget(east, 1, 7)
-        l_r = but_img(r_l_path)
+        l_r = but_img(c_r_l_path)
         grid.addWidget(l_r, 1, 6)
-        u_d = but_img(u_d_path)
+        u_d = but_img(c_u_d_path)
         grid.addWidget(u_d, 1, 4)
-        all = but_img(a_path)
+        all = but_img(c_a_path)
         grid.addWidget(all, 1, 5)
-        # 버튼 css
-        save.setStyleSheet("color: white;background-color: rgb(227, 35, 153);border-radius: 10px;")
+        #css
+        self.table.setStyleSheet("background-color:white")
+        self.setStyleSheet("background-color:rgb(1,35,38);")
+        save.setStyleSheet("color: rgb(82,242,226);background-color: rgb(86,140,140);border-radius: 10px;border: 2px solid rgb(82,242,226);")
         save.setFont(QFont('나눔고딕 ExtraBold', 13))
         save.setMinimumSize(30, 30)
         charge.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         charge.setFont(QFont('나눔고딕 ExtraBold', 12))
         chute.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         chute.setFont(QFont('나눔고딕 ExtraBold', 12))
         ws.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         ws.setFont(QFont('나눔고딕 ExtraBold', 12))
         buffer.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         buffer.setFont(QFont('나눔고딕 ExtraBold', 12))
         block.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         block.setFont(QFont('나눔고딕 ExtraBold', 12))
         north.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         north.setMinimumSize(30, 30)
         south.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         south.setMinimumSize(30, 30)
         east.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         east.setMinimumSize(30, 30)
         west.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         west.setMinimumSize(30, 30)
         all.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         all.setMinimumSize(30, 30)
         u_d.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         u_d.setMinimumSize(30, 30)
         l_r.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "border: 2px solid rgb(82,242,226);border-radius: 10px;")
         l_r.setMinimumSize(30, 30)
         trash.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         trash.setFont(QFont('나눔고딕 ExtraBold', 12))
         clear.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         clear.setFont(QFont('나눔고딕 ExtraBold', 12))
         addrow.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         addrow.setFont(QFont('나눔고딕 ExtraBold', 12))
         addcol.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         addcol.setFont(QFont('나눔고딕 ExtraBold', 12))
         delrow.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         delrow.setFont(QFont('나눔고딕 ExtraBold', 12))
         delcol.setStyleSheet(
-            "color: rgb(0,0,127);background-color: white;border: 2px solid rgb(0,0,127);border-radius: 10px;")
+            "color: rgb(82,242,226);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         delcol.setFont(QFont('나눔고딕 ExtraBold', 12))
         self.setLayout(vbox)
-        self.setGeometry(200, 200, 400, 500)
-        self.table.setColumnCount(int(count_len))
-        self.table.setRowCount(int(count_wid))
-        for i in range(int(count_wid)):
-            for j in range(int(count_len)):
+        self.setGeometry(100, 50, 1000, 550)
+        self.table.setColumnCount(int(count_wid))
+        self.table.setRowCount(int(count_high))
+        for i in range(int(count_high)):
+            for j in range(int(count_wid)):
                 self.table.setItem(i, j, QTableWidgetItem())
                 # self.table.item(i , j).setBackground(Qt.white)
                 # self.table.item(i, j).setForeground(Qt.black)
@@ -1223,8 +1125,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_north(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(u_path, "↑")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -1233,8 +1134,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_south(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(d_path, "↓")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -1243,8 +1143,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_west(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(l_path, "←")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -1253,8 +1152,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_east(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(r_path, "→")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -1263,8 +1161,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_all(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(a_path, "↕↔")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -1272,8 +1169,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_l_r(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(r_l_path, "↔")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
@@ -1281,14 +1177,12 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
     def btn_u_d(self):
         for ix in self.table.selectedIndexes():
-            bgcolor = self.table.item(
-                ix.row(), ix.column()).background().color()
+            bgcolor = self.table.item(ix.row(), ix.column()).background().color()
             item = dir_img(u_d_path, "↕")
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
 
-    # @pyqtSlot()
     def btn_charge(self):
         global yellow, red, green, blue, gray
         for ix in self.table.selectedIndexes():
@@ -1373,7 +1267,8 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                 self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 red = 4
             elif i_buf == 3:
-                self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGreen)
+                self.table.item(ix.row(), ix.column()
+                                ).setBackground(Qt.darkGreen)
                 self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 green = 4
             elif i_buf == 4:
@@ -1408,7 +1303,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.darkGray)
                 self.table.item(ix.row(), ix.column()).setForeground(Qt.white)
                 gray = 5
-
     def btn_trash(self):
         for ix in self.table.selectedIndexes():
             item = self.table.item(ix.row(), ix.column())
@@ -1431,8 +1325,8 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                 self.table.setItem(i, j, item)
 
     def btn_addcol(self):
-        global temp_count_len
-        temp_count_len += 1
+        global temp_count_wid
+        temp_count_wid += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         self.table.insertColumn(col_count)  # 새로운 행 count
@@ -1442,8 +1336,8 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
             self.table.item(i, col_count).setForeground(Qt.black)
 
     def btn_addrow(self):
-        global temp_count_wid
-        temp_count_wid += 1
+        global temp_count_high
+        temp_count_high += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         self.table.insertRow(row_count)
@@ -1453,21 +1347,21 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
             self.table.item(row_count, j).setForeground(Qt.black)
 
     def btn_delcol(self):
-        global temp_count_len
-        temp_count_len -= 1
+        global temp_count_wid
+        temp_count_wid -= 1
         col_count = self.table.columnCount()
         self.table.removeColumn(col_count - 1)
 
     def btn_delrow(self):
-        global temp_count_wid
-        temp_count_wid -= 1
+        global temp_count_high
+        temp_count_high -= 1
         row_count = self.table.rowCount()
         self.table.removeRow(row_count - 1)
 
     # -saveMap button 함수: 맵 저장
     def btn_save_map(self):
         global yellow, red, blue, gray, green
-        global temp_count_len, temp_count_wid, size_len, size_wid  # 그리드 크기, 셀 크기
+        global temp_count_wid, temp_count_high, size_wid, size_high  # 그리드 크기, 셀 크기
         global count_charge, count_chute, count_ws, count_buf, count_blk  # 특수 셀 개수
         global i_charge, i_chute, i_ws, i_buf, i_blk  # 특수 셀 색
 
@@ -1479,7 +1373,8 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
         # 그리드 테이블 생성
         sql = "CALL createGrid(%s, %s, %s, %s, %s);"
-        cur.execute(sql, [str(file_name), temp_count_len, temp_count_wid, size_len, size_wid])
+        cur.execute(sql, [str(file_name), temp_count_wid,
+                          temp_count_high, size_wid, size_high])
 
         # 그리드 셀 개수, 특수 셀 색상 정보 업데이트
         sql = "CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s)"
@@ -1500,12 +1395,13 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
                 # 기본 셀 생성(형식 : 파일이름_c_num)
                 sql = "CALL createCell(%s, %s, %s, %s);"
-                cur.execute(sql, [str(file_name), cell_num, str(row), str(col)])
+                cur.execute(
+                    sql, [str(file_name), cell_num, str(row), str(col)])
 
                 item = self.table.item(row, col)
                 format = workbook.add_format()
                 # DB에 특수 셀 색상 정보 업데이트
-                #네방향 추가, 두방향 제거
+                # 네방향 추가, 두방향 제거
                 if item.background().color() == Qt.yellow:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(yellow)])
@@ -1551,21 +1447,9 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                     sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
                     cur.execute(sql, [cell_num])
                 # 디비 추가
-                elif item.text() == "↑→":
-                    worksheet1.write(row, col, "↑→", format)
-                    sql = "CALL updateCellDirection(%s, 1, 0, 0, 1);"
-                    cur.execute(sql, [cell_num])
-                elif item.text() == "↓→":
-                    worksheet1.write(row, col, "↓→", format)
-                    sql = "CALL updateCellDirection(%s, 0, 1, 0, 1);"
-                    cur.execute(sql, [cell_num])
-                elif item.text() == "←↓":
-                    worksheet1.write(row, col, "←↓", format)
-                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
-                    cur.execute(sql, [cell_num])
-                elif item.text() == "←↑":
-                    worksheet1.write(row, col, "←↑", format)
-                    sql = "CALL updateCellDirection(%s, 0, 1, 1, 0);"
+                elif item.text() == "↕↔":
+                    worksheet1.write(row, col, "↕↔", format)
+                    sql = "CALL updateCellDirection(%s, 1, 1, 1, 1);"
                     cur.execute(sql, [cell_num])
                 elif item.text() == "↔":
                     worksheet1.write(row, col, "↔", format)
