@@ -26,7 +26,7 @@ import random
 
 import xlsxwriter
 import openpyxl
-from PyQt5.uic.properties import QtGui
+#from PyQt5.uic.properties import QtGui
 
 import pymysql
 from PySide6.QtWidgets import QMainWindow, QDialog, QWidget, QFileDialog, QTableWidget, QVBoxLayout, QGridLayout, \
@@ -102,9 +102,9 @@ form_second = resource_path('setGrid.ui')
 # form_secondwindow = uic.loadUiType(form_second)[0]
 form_secondwindow = loadUiType(form_second)[0]
 # 3.setAttribute.ui
-form_third = resource_path('setAttribute.ui')
+#form_third = resource_path('setAttribute.ui')
 # form_thirdwindow = uic.loadUiType(form_third)[0]
-form_thirdwindow = loadUiType(form_third)[0]
+#form_thirdwindow = loadUiType(form_third)[0]
 # 4.createMap.ui
 form_fourth = resource_path('createMap.ui')
 # form_fourthwindow = uic.loadUiType(form_fourth)[0]
@@ -323,8 +323,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         # css
         self.table.setStyleSheet("background-color:white")
         self.setStyleSheet("background-color:rgb(1,35,38);")
-        save.setStyleSheet(
-            "color: rgb(82,242,226);background-color: rgb(86,140,140);border: 2px solid rgb(82,242,226);border-radius: 10px;")
+        save.setStyleSheet("color: rgb(82,242,226);background-color: rgb(86,140,140);border: 2px solid rgb(82,242,226);border-radius: 10px;")
         save.setFont(QFont('나눔고딕 ExtraBold', 13))
         save.setMinimumSize(30, 30)
         charge.setStyleSheet(
@@ -838,41 +837,18 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         super(secondwindow, self).__init__()
         # self.initUi()
         self.setupUi(self)
-        self.setWindowTitle("새 파일 만들기 - 그리드 설정")
+        self.setWindowTitle("새 파일 만들기 - 셀 설정")
         self.setWindowIcon(QIcon('logo.png'))
         self.setGeometry(100, 50, 1000, 550)
         self.show()
         self.gridNext.clicked.connect(self.btn_next_to_setattribute)  # gridNext button 클릭
-
-    # -gridNext button 함수: setAttribute.ui로 창전환, DB저장
-    def btn_next_to_setattribute(self, text):
-        global size_wid, size_high, count_wid, count_high
-        size_wid =self.size_w.text()
-        size_high=self.size_h.text()
-        count_wid = self.count_w.text()
-        count_high = self.count_h.text()
-        self.hide()
-        self.second = thirdwindow()
-        self.second.exec()
-        # self.show()
-
-# 3.setAttribute.ui
-class thirdwindow(QDialog, QWidget, form_thirdwindow):
-    def __init__(self):
-        super(thirdwindow, self).__init__()
-        # self.initUi()
-        self.setupUi(self)
-        self.setWindowTitle("새 파일 만들기 - 셀 설정")
-        self.setWindowIcon(QIcon('logo.png'))
-        self.setGeometry(100, 50, 1000, 550)
+        #셀색상
         global i_charge, i_chute, i_ws, i_buf, i_blk
         self.cb_charge.activated[int].connect(self.btn_charge_color)
         self.cb_chute.activated[int].connect(self.btn_chute_color)
         self.cb_ws.activated[int].connect(self.btn_ws_color)
         self.cb_buffer.activated[int].connect(self.btn_buf_color)
         self.cb_block.activated[int].connect(self.btn_blk_color)
-        self.attributeNext.clicked.connect(self.btn_next_to_map)  # attributeNext button 클릭
-        self.show()
 
     def btn_charge_color(self,int):
         global color_charge,i_charge
@@ -963,6 +939,22 @@ class thirdwindow(QDialog, QWidget, form_thirdwindow):
         elif int == 5:
             color_blk = "darkGray"
             i_blk = 5
+
+    # -gridNext button 함수: setAttribute.ui로 창전환, DB저장
+    def btn_next_to_setattribute(self, text):
+        global count_wid, count_high
+        count_wid = self.count_w.text()
+        count_high = self.count_h.text()
+        global count_charge, count_chute, count_ws, count_buf, count_blk
+        count_charge = self.cnt_charge.text()
+        count_chute = self.cnt_chute.text()
+        count_ws = self.cnt_ws.text()
+        count_buf = self.cnt_buffer.text()
+        count_blk = self.cnt_block.text()
+        self.hide()
+        self.third = fourthwindow()
+        self.third.exec()
+        # self.show()
 
     # -attributeNext button 함수: createMap.ui로 창전환
     def btn_next_to_map(self):
@@ -1365,6 +1357,10 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         global count_charge, count_chute, count_ws, count_buf, count_blk  # 특수 셀 개수
         global i_charge, i_chute, i_ws, i_buf, i_blk  # 특수 셀 색
 
+        #임시! 매크로 고치기!
+        size_high=0
+        size_wid=0
+
         file = QFileDialog.getSaveFileName(self, '', '', 'xlsx Files(*.xlsx)')
         workbook = xlsxwriter.Workbook(file[0])  # 지정 파일 이름
         worksheet1 = workbook.add_worksheet('NewSheet1')
@@ -1373,8 +1369,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
 
         # 그리드 테이블 생성
         sql = "CALL createGrid(%s, %s, %s, %s, %s);"
-        cur.execute(sql, [str(file_name), temp_count_wid,
-                          temp_count_high, size_wid, size_high])
+        cur.execute(sql, [str(file_name), temp_count_wid,temp_count_high, size_wid, size_high])
 
         # 그리드 셀 개수, 특수 셀 색상 정보 업데이트
         sql = "CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s)"
