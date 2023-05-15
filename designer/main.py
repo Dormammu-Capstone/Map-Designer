@@ -83,39 +83,25 @@ def but_img(path):
     pixmap.scaled(1, 1)
     icon = QIcon(pixmap)
     but = QPushButton()
-    # but.setText(text)
     but.setIcon(icon)
-    # font = QFont()
-    # font.setPointSize(1)
-    # item.setFont(font)
-    # item.setForeground(QBrush(Qt.transparent))
-    # item.setTextAlignment(Qt.AlignCenter)
     return but
 
 
 # 1.homePage.ui
-form = resource_path('homePage.ui')  # 여기에 ui파일명 입력
-# form_class = uic.loadUiType(form)[0]
+form = resource_path('homePage.ui')
 form_class = loadUiType(form)[0]
 # 2.setGrid.ui
 form_second = resource_path('setGrid.ui')
-# form_secondwindow = uic.loadUiType(form_second)[0]
 form_secondwindow = loadUiType(form_second)[0]
-# 3.setAttribute.ui
-#form_third = resource_path('setAttribute.ui')
-# form_thirdwindow = uic.loadUiType(form_third)[0]
-#form_thirdwindow = loadUiType(form_third)[0]
+
 # 4.createMap.ui
 form_fourth = resource_path('createMap.ui')
-# form_fourthwindow = uic.loadUiType(form_fourth)[0]
 form_fourthwindow = loadUiType(form_fourth)[0]
 # 5.viewFile.ui
 form_fifth = resource_path('viewFile.ui')
-# form_fifthwindow = uic.loadUiType(form_fifth)[0]
 form_fifthwindow = loadUiType(form_fifth)[0]
 # 6.sixthFile.ui
 form_sixth = resource_path('editFile.ui')
-# form_sixthwindow = uic.loadUiType(form_sixth)[0]
 form_sixthwindow = loadUiType(form_sixth)[0]
 
 
@@ -444,18 +430,18 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 else:
                     self.table.item(i - 1, j - 1).setForeground(Qt.black)
 
-        charge.clicked.connect(self.btn_charge)  # charge button 클릭
-        chute.clicked.connect(self.btn_chute)  # chute button 클릭
-        ws.clicked.connect(self.btn_ws)  # ws button 클릭
-        buffer.clicked.connect(self.btn_buffer)  # buffer button 클릭
-        block.clicked.connect(self.btn_block)  # block button 클릭
-        trash.clicked.connect(self.btn_trash)  # trash button 클릭
-        clear.clicked.connect(self.btn_clear)  # clear button 클릭
-        addrow.clicked.connect(self.btn_addrow)  # addRow button 클릭
-        addcol.clicked.connect(self.btn_addcol)  # addCol button 클릭
-        delrow.clicked.connect(self.btn_delrow)  # delRow button 클릭
-        delcol.clicked.connect(self.btn_delcol)  # delCol button 클릭
-        save.clicked.connect(self.btn_save_map)  # saveMap button 클릭
+        charge.clicked.connect(self.btn_charge)
+        chute.clicked.connect(self.btn_chute)
+        ws.clicked.connect(self.btn_ws)
+        buffer.clicked.connect(self.btn_buffer)
+        block.clicked.connect(self.btn_block)
+        trash.clicked.connect(self.btn_trash)
+        clear.clicked.connect(self.btn_clear)
+        addrow.clicked.connect(self.btn_addrow)
+        addcol.clicked.connect(self.btn_addcol)
+        delrow.clicked.connect(self.btn_delrow)
+        delcol.clicked.connect(self.btn_delcol)
+        save.clicked.connect(self.btn_save_map)
         north.clicked.connect(self.btn_north)
         south.clicked.connect(self.btn_south)
         west.clicked.connect(self.btn_west)
@@ -740,10 +726,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 sql = "CALL createCell(%s, %s, %s, %s);"
                 cur.execute(sql, [file_name, cell_num, str(row), str(col)])
                 item = self.table.item(row, col)
-                # worksheet1.write(row, col, item.text())
                 format = workbook.add_format()
-                # DB에 특수 셀 색상 정보 업데이트
-                # 네방향 추가, 두방향 제거
                 if item.background().color() == Qt.yellow:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(yellow)])
@@ -835,14 +818,13 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 class secondwindow(QDialog, QWidget, form_secondwindow):
     def __init__(self):
         super(secondwindow, self).__init__()
-        # self.initUi()
         self.setupUi(self)
         self.setWindowTitle("새 파일 만들기 - 셀 설정")
         self.setWindowIcon(QIcon('logo.png'))
         self.setGeometry(100, 50, 1000, 550)
         self.show()
-        self.gridNext.clicked.connect(self.btn_next_to_setattribute)  # gridNext button 클릭
-        #셀색상
+        self.gridNext.clicked.connect(self.btn_next_to_setattribute)
+
         global i_charge, i_chute, i_ws, i_buf, i_blk
         self.cb_charge.activated[int].connect(self.btn_charge_color)
         self.cb_chute.activated[int].connect(self.btn_chute_color)
@@ -1090,22 +1072,20 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         for i in range(int(count_high)):
             for j in range(int(count_wid)):
                 self.table.setItem(i, j, QTableWidgetItem())
-                # self.table.item(i , j).setBackground(Qt.white)
-                # self.table.item(i, j).setForeground(Qt.black)
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
-        charge.clicked.connect(self.btn_charge)  # charge button 클릭
-        chute.clicked.connect(self.btn_chute)  # chute button 클릭
-        ws.clicked.connect(self.btn_ws)  # ws button 클릭
-        buffer.clicked.connect(self.btn_buffer)  # buffer button 클릭
-        block.clicked.connect(self.btn_block)  # block button 클릭
-        trash.clicked.connect(self.btn_trash)  # trash button 클릭
-        clear.clicked.connect(self.btn_clear)  # clear button 클릭
-        addrow.clicked.connect(self.btn_addrow)  # addRow button 클릭
-        addcol.clicked.connect(self.btn_addcol)  # addCol button 클릭
-        delrow.clicked.connect(self.btn_delrow)  # delRow button 클릭
-        delcol.clicked.connect(self.btn_delcol)  # delCol button 클릭
-        save.clicked.connect(self.btn_save_map)  # saveMap button 클릭
+        charge.clicked.connect(self.btn_charge)
+        chute.clicked.connect(self.btn_chute)
+        ws.clicked.connect(self.btn_ws)
+        buffer.clicked.connect(self.btn_buffer)
+        block.clicked.connect(self.btn_block)
+        trash.clicked.connect(self.btn_trash)
+        clear.clicked.connect(self.btn_clear)
+        addrow.clicked.connect(self.btn_addrow)
+        addcol.clicked.connect(self.btn_addcol)
+        delrow.clicked.connect(self.btn_delrow)
+        delcol.clicked.connect(self.btn_delcol)
+        save.clicked.connect(self.btn_save_map)
         north.clicked.connect(self.btn_north)
         south.clicked.connect(self.btn_south)
         west.clicked.connect(self.btn_west)
@@ -1122,7 +1102,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("↑")
 
     def btn_south(self):
         for ix in self.table.selectedIndexes():
@@ -1131,7 +1110,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("↓")
 
     def btn_west(self):
         for ix in self.table.selectedIndexes():
@@ -1140,7 +1118,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("←")
 
     def btn_east(self):
         for ix in self.table.selectedIndexes():
@@ -1149,7 +1126,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
             self.table.setItem(ix.row(), ix.column(), item)
             if bgcolor != QColor.fromRgbF(0, 0, 0, 1):
                 self.table.item(ix.row(), ix.column()).setBackground(bgcolor)
-            # self.table.item(ix.row(),ix.column()).setText("→")
 
     def btn_all(self):
         for ix in self.table.selectedIndexes():
@@ -1321,7 +1297,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         temp_count_wid += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
-        self.table.insertColumn(col_count)  # 새로운 행 count
+        self.table.insertColumn(col_count)
         for i in range(row_count):
             self.table.setItem(i, col_count, QTableWidgetItem())
             self.table.item(i, col_count).setBackground(Qt.white)
@@ -1353,16 +1329,16 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
     # -saveMap button 함수: 맵 저장
     def btn_save_map(self):
         global yellow, red, blue, gray, green
-        global temp_count_wid, temp_count_high, size_wid, size_high  # 그리드 크기, 셀 크기
-        global count_charge, count_chute, count_ws, count_buf, count_blk  # 특수 셀 개수
-        global i_charge, i_chute, i_ws, i_buf, i_blk  # 특수 셀 색
+        global temp_count_wid, temp_count_high, size_wid, size_high
+        global count_charge, count_chute, count_ws, count_buf, count_blk
+        global i_charge, i_chute, i_ws, i_buf, i_blk
 
         #임시! 매크로 고치기!
         size_high=0
         size_wid=0
 
         file = QFileDialog.getSaveFileName(self, '', '', 'xlsx Files(*.xlsx)')
-        workbook = xlsxwriter.Workbook(file[0])  # 지정 파일 이름
+        workbook = xlsxwriter.Workbook(file[0])
         worksheet1 = workbook.add_worksheet('NewSheet1')
 
         file_name = QFileInfo(file[0]).baseName()
