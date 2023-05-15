@@ -26,7 +26,6 @@ import random
 
 import xlsxwriter
 import openpyxl
-#from PyQt5.uic.properties import QtGui
 
 import pymysql
 from PySide6.QtWidgets import QMainWindow, QDialog, QWidget, QFileDialog, QTableWidget, QVBoxLayout, QGridLayout, \
@@ -93,7 +92,6 @@ form_class = loadUiType(form)[0]
 # 2.setGrid.ui
 form_second = resource_path('setGrid.ui')
 form_secondwindow = loadUiType(form_second)[0]
-
 # 4.createMap.ui
 form_fourth = resource_path('createMap.ui')
 form_fourthwindow = loadUiType(form_fourth)[0]
@@ -118,21 +116,17 @@ class WindowClass(QMainWindow, form_class):
         pixmap = QPixmap(logo_path)
         self.logolabel.setPixmap(pixmap)
 
-    # 여기에 시그널-슬롯 연결 설정 및 함수 설정.
-    # -createFile button 함수: setGrid.ui로 창전환
     def btn_createfile_to_setgrid(self):
         self.hide()
         self.second = secondwindow()
         self.second.exec()
         self.show()
 
-    # -openFile button 함수: 파일선택창
     def btn_fileLoad(self):
-        # 미리보기ui연결 수정클릭->수정페이지
         self.hide()
         self.fifth = fifthwindow()
         self.fifth.exec()
-        self.show()  # homepage로 돌아감
+        self.show()
 
 
 # 5. viewFile.ui
@@ -153,7 +147,7 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         self.table = QTableWidget(parent)
         self.table.setStyleSheet("background-color:white")
         self.setStyleSheet("background-color:rgb(1,35,38);")
-        # 파일 이름으로 db에서 해당 정보 연결
+
         file_name = QFileInfo(file[0]).baseName()
 
         vbox = QVBoxLayout()
@@ -178,7 +172,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         col = int(file_col[0])
         self.table.setColumnCount(col)
         self.table.setRowCount(row)
-        # 반드시 item 생성해야 셀 색상 변경가능
         for i in range(row):
             for j in range(col):
                 self.table.setItem(i, j, QTableWidgetItem())
@@ -238,7 +231,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
                     self.table.item(i - 1, j - 1).setForeground(Qt.black)
 
         edit.clicked.connect(self.btn_edit)
-        # self.show() #파일 선택후 맵미리보기창이 뒤에 뜨게됨
 
     def btn_edit(self):
         self.hide()
@@ -256,8 +248,6 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         file_grid = cur.fetchone()
 
         super(sixthwindow, self).__init__()
-        # self.initUi()
-        # self.setupUi(self)
         self.setWindowTitle("맵 수정하기")
         self.setWindowIcon(QIcon('logo.png'))
         self.setGeometry(100, 50, 1000, 550)
@@ -304,7 +294,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         grid.addWidget(u_d, 1, 4)
         all = but_img(c_a_path)
         grid.addWidget(all, 1, 5)
-        # css
+
         self.table.setStyleSheet("background-color:white")
         self.setStyleSheet("background-color:rgb(1,35,38);")
         save.setStyleSheet("color: rgb(82,242,226);background-color: rgb(86,140,140);border: 2px solid rgb(82,242,226);border-radius: 10px;")
@@ -368,8 +358,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         self.setGeometry(100, 50, 1000, 550)
         load_xlsx = openpyxl.load_workbook(filename, data_only=True)
         load_sheet = load_xlsx['NewSheet1']
-        # row = load_sheet.max_row
-        # col = load_sheet.max_column
+
         self.table.setColumnCount(col)
         self.table.setRowCount(row)
         for i in range(row):
@@ -386,7 +375,6 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 cur.execute(sql, [cell_num])
                 cellinfo = cur.fetchone()
                 # n:6 s:7 w:8 e:9
-                # 네방향 추가, 두방향 제거
                 if cellinfo[6] == 1:
                     if cellinfo[7] == 1:
                         item = dir_img(u_d_path, "↕")
@@ -640,7 +628,6 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
             self.table.setItem(ix.row(), ix.column(), item)
 
     def btn_clear(self):
-        # 색상 변경 위한 item 추가
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
         for i in range(row_count):
@@ -657,8 +644,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         temp_count_wid += 1
         row_count = self.table.rowCount()
         col_count = self.table.columnCount()
-        self.table.insertColumn(col_count)  # 새로운 행 count
-        # 셀 색상 변경 위해 item 추가
+        self.table.insertColumn(col_count)
         for i in range(row_count):
             self.table.setItem(i, col_count, QTableWidgetItem())
             self.table.item(i, col_count).setForeground(Qt.black)
@@ -685,9 +671,8 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         row_count = self.table.rowCount()
         self.table.removeRow(row_count - 1)
 
-    # -saveMap button 함수: 맵 저장
     def btn_save_map(self):
-        workbook = xlsxwriter.Workbook(filename)  # 지정 파일 이름
+        workbook = xlsxwriter.Workbook(filename)
         worksheet1 = workbook.add_worksheet('NewSheet1')
         global yellow, red, blue, gray, green, temp_count_wid, temp_count_high, file_name, file_grid
         sql = "CALL deleteGrid(%s); CALL createGrid(%s, %s, %s, %s, %s); CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s);"
@@ -717,7 +702,6 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         BUFnum = 1
 
         for row in range(self.table.rowCount()):
-            # rowData=[]
             for col in range(self.table.columnCount()):
                 cell_num = str(file_name) + '_c' + str(cnum).zfill(4)
                 cnum += 1
@@ -750,7 +734,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                     cur.execute(sql, [str(file_name), cell_num, str(gray)])
                     format.set_bg_color('gray')
                     format.set_font_color('white')
-                else:  # 색상 없는 셀도 방향 정보 생김
+                else:
                     format.set_bg_color('white')
                     format.set_font_color('black')
                 if item.text() == "↑":
@@ -769,7 +753,6 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                     worksheet1.write(row, col, "→", format)
                     sql = "CALL updateCellDirection(%s, 0, 0, 0, 1);"
                     cur.execute(sql, [cell_num])
-                # 디비 추가
                 elif item.text() == "↕↔":
                     worksheet1.write(row, col, "↕↔", format)
                     sql = "CALL updateCellDirection(%s, 1, 1, 1, 1);"
@@ -788,22 +771,22 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
                 sql = "SELECT CellStatus FROM cell " + "WHERE Cell_ID = %s"
                 cur.execute(sql, [cell_num])
                 Cstatus = cur.fetchone()
-                if Cstatus[0] == 1:  # 충전
+                if Cstatus[0] == 1:
                     CS_num = str(file_name) + '_CS' + str(CSnum).zfill(4)
                     CSnum += 1
                     sql = "CALL createCS(%s, %s, %s, NULL);"
                     cur.execute(sql, [file_name, cell_num, CS_num])
-                elif Cstatus[0] == 2:  # 슈트
+                elif Cstatus[0] == 2:
                     CH_num = str(file_name) + '_CH' + str(CHnum).zfill(4)
                     CHnum += 1
                     sql = "CALL createChute(%s, %s, %s, NULL, NULL);"
                     cur.execute(sql, [file_name, cell_num, CH_num])
-                elif Cstatus[0] == 3:  # 워크스테이션
+                elif Cstatus[0] == 3:
                     WS_num = str(file_name) + '_WS' + str(WSnum).zfill(4)
                     WSnum += 1
                     sql = "CALL createWS(%s, %s, %s, NULL);"
                     cur.execute(sql, [file_name, cell_num, WS_num])
-                elif Cstatus[0] == 4:  # 버퍼
+                elif Cstatus[0] == 4:
                     BUF_num = str(file_name) + '_BUF' + str(BUFnum).zfill(4)
                     BUFnum += 1
                     sql = "CALL createBuffer(%s, %s, %s);"
@@ -920,7 +903,6 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
             color_blk = "darkGray"
             i_blk = 5
 
-    # -gridNext button 함수: setAttribute.ui로 창전환, DB저장
     def btn_next_to_setattribute(self, text):
         global count_wid, count_high
         count_wid = self.count_w.text()
@@ -934,9 +916,7 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         self.hide()
         self.third = fourthwindow()
         self.third.exec()
-        # self.show()
 
-    # -attributeNext button 함수: createMap.ui로 창전환
     def btn_next_to_map(self):
         global count_charge, count_chute, count_ws, count_buf, count_blk
         count_charge=self.cnt_charge.text()
@@ -955,8 +935,6 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         temp_count_wid = int(count_wid)
         temp_count_high = int(count_high)
         super(fourthwindow, self).__init__()
-        # self.initUi()
-        # self.setupUi(self)
         self.setWindowTitle("새 파일 만들기 - 맵 그리기")
         self.setWindowIcon(QIcon('logo.png'))
         self.setGeometry(100, 50, 1000, 550)
@@ -1003,7 +981,7 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         grid.addWidget(u_d, 1, 4)
         all = but_img(c_a_path)
         grid.addWidget(all, 1, 5)
-        #css
+
         self.table.setStyleSheet("background-color:white")
         self.setStyleSheet("background-color:rgb(1,35,38);")
         save.setStyleSheet("color: rgb(82,242,226);background-color: rgb(86,140,140);border-radius: 10px;border: 2px solid rgb(82,242,226);")
@@ -1362,15 +1340,12 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                 cell_num = str(file_name) + '_c' + str(cnum).zfill(4)
                 cnum += 1
 
-                # 기본 셀 생성(형식 : 파일이름_c_num)
                 sql = "CALL createCell(%s, %s, %s, %s);"
                 cur.execute(
                     sql, [str(file_name), cell_num, str(row), str(col)])
 
                 item = self.table.item(row, col)
                 format = workbook.add_format()
-                # DB에 특수 셀 색상 정보 업데이트
-                # 네방향 추가, 두방향 제거
                 if item.background().color() == Qt.yellow:
                     sql = "CALL updateCellStatus(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, str(yellow)])
@@ -1434,27 +1409,26 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
                 sql = "SELECT CellStatus FROM cell " + "WHERE Cell_ID = %s;"
                 cur.execute(sql, [cell_num])
                 Cstatus = cur.fetchone()
-                if Cstatus[0] == 1:  # 충전 셀 생성
+                if Cstatus[0] == 1:
                     CS_num = str(file_name) + '_CS' + str(CSnum).zfill(4)
                     CSnum += 1
                     sql = "CALL createCS(%s, %s, %s, NULL);"
                     cur.execute(sql, [str(file_name), cell_num, CS_num])
-                elif Cstatus[0] == 2:  # 슈트 셀 생성
+                elif Cstatus[0] == 2:
                     CH_num = str(file_name) + '_CH' + str(CHnum).zfill(4)
                     CHnum += 1
                     sql = "CALL createChute(%s, %s, %s, NULL, NULL);"
                     cur.execute(sql, [str(file_name), cell_num, CH_num])
-                elif Cstatus[0] == 3:  # 워크스테이션 셀 생성
+                elif Cstatus[0] == 3:
                     WS_num = str(file_name) + '_WS' + str(WSnum).zfill(4)
                     WSnum += 1
                     sql = "CALL createWS(%s, %s, %s, NULL);"
                     cur.execute(sql, [str(file_name), cell_num, WS_num])
-                elif Cstatus[0] == 4:  # 버퍼 셀 생성
+                elif Cstatus[0] == 4:
                     BUF_num = str(file_name) + '_BUF' + str(BUFnum).zfill(4)
                     BUFnum += 1
                     sql = "CALL createBuffer(%s, %s, %s);"
                     cur.execute(sql, [str(file_name), cell_num, BUF_num])
-
         workbook.close()
         self.close()
 
