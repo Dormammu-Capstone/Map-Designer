@@ -111,8 +111,8 @@ class WindowClass(QMainWindow, form_class):
         self.setWindowTitle("맵 디자인")
         self.setWindowIcon(QIcon('logo.png'))
         self.setGeometry(100, 50, 1000, 550)
-        self.createFile.clicked.connect(self.btn_createfile_to_setgrid)  # createFile button 클릭
-        self.openFile.clicked.connect(self.btn_fileLoad)  # openFile button 클릭
+        self.createFile.clicked.connect(self.btn_createfile_to_setgrid)
+        self.openFile.clicked.connect(self.btn_fileLoad)
         pixmap = QPixmap(logo_path)
         self.logolabel.setPixmap(pixmap)
 
