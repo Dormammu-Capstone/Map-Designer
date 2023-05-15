@@ -140,14 +140,13 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
     def __init__(self, parent=None):
         global row, col, file_name
         super(fifthwindow, self).__init__()
-        # self.initUi()
         self.setupUi(self)
         self.setWindowTitle("맵 미리보기")
         self.setWindowIcon(QIcon('logo.png'))
-        self.show()  # 파일선택후 창이 앞으로 띄워지게 하기위해 위에 위치
-        self.setGeometry(100, 50, 1000, 550) #파일열기 전 위치
-        file = QFileDialog.getOpenFileName(self, '', '', 'xlsx파일 (*.xlsx);; All File(*)')  # !!저장파일 타입 정해지면, 확장자에 추가
-        global filename  # 선언, 할당 분리
+        self.show()
+        self.setGeometry(100, 50, 1000, 550)
+        file = QFileDialog.getOpenFileName(self, '', '', 'xlsx파일 (*.xlsx);; All File(*)')
+        global filename
         filename = file[0]
         load_xlsx = openpyxl.load_workbook(file[0], data_only=True)
         load_sheet = load_xlsx['NewSheet1']
@@ -164,7 +163,7 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
         edit = QPushButton("수 정")
         grid.addWidget(edit, 0, 0)
         self.setLayout(vbox)
-        self.setGeometry(100, 50, 1000, 550) #파일연 후 위치
+        self.setGeometry(100, 50, 1000, 550)
         edit.setFixedSize(100, 100)
         edit.setStyleSheet("color: rgb(82,242,226);border: 5px double rgb(82,242,226);border-radius: 15px;")
         edit.setFont(QFont('나눔고딕 ExtraBold', 18))
@@ -185,7 +184,7 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
                 self.table.setItem(i, j, QTableWidgetItem())
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
-        # load_excel은 1부터, table은 0부터
+
 
         cnum = 1
         for i in range(1, row + 1):
@@ -196,7 +195,6 @@ class fifthwindow(QDialog, QWidget, form_fifthwindow):
                 cur.execute(sql, [cell_num])
                 cellinfo = cur.fetchone()
                 # n:6 s:7 w:8 e:9
-                #네방향 추가, 두방향 제거
                 if cellinfo[6] == 1:
                     if cellinfo[7] == 1:
                         item = dir_img(u_d_path, "↕")
