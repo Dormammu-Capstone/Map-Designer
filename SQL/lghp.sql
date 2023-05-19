@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `buffer` (
   CONSTRAINT `FK__buffer_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.buffer:~6 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.buffer:~9 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `buffer` DISABLE KEYS */;
 /*!40000 ALTER TABLE `buffer` ENABLE KEYS */;
 
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `cell` (
   CONSTRAINT `FK_cell_Robot_ID` FOREIGN KEY (`Robot_ID`) REFERENCES `robot` (`Robot_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.cell:~25 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.cell:~74 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `cell` DISABLE KEYS */;
 /*!40000 ALTER TABLE `cell` ENABLE KEYS */;
 
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `chargingstation` (
   CONSTRAINT `FK_chargingstation_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.chargingstation:~0 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.chargingstation:~11 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `chargingstation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `chargingstation` ENABLE KEYS */;
 
@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS `chute` (
   `LocationY` int(11) DEFAULT NULL,
   `RobotDirection` int(11) DEFAULT NULL,
   `Chute_Status` int(11) DEFAULT 1,
-  `Classification` int(11) DEFAULT NULL,
   `CurrentCnt` int(11) DEFAULT 0,
   `MaxCnt` int(11) DEFAULT NULL,
   PRIMARY KEY (`Chute_ID`),
@@ -100,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `chute` (
   CONSTRAINT `FK_chute_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.chute:~3 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.chute:~22 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `chute` DISABLE KEYS */;
 /*!40000 ALTER TABLE `chute` ENABLE KEYS */;
 
@@ -202,13 +201,11 @@ DELIMITER //
 CREATE PROCEDURE `createGrid`(
 	IN `myGrid_ID` VARCHAR(50),
 	IN `myGridSizeX` INT,
-	IN `myGridSizeY` INT,
-	IN `myCellWidth` INT,
-	IN `myCellHeight` INT
+	IN `myGridSizeY` INT
 )
 BEGIN
-INSERT INTO grid(Grid_ID, GridSizeX, GridSizeY, CellWidth, CellHeight)
-VALUES(myGrid_ID, myGridSizeX, myGridSizeY, myCellWidth, myCellHeight);
+INSERT INTO grid(Grid_ID, GridSizeX, GridSizeY)
+VALUES(myGrid_ID, myGridSizeX, myGridSizeY);
 
 UPDATE grid
 SET TotalCellCnt = myGridSizeX * myGridSizeY
@@ -426,8 +423,6 @@ CREATE TABLE IF NOT EXISTS `grid` (
   `Grid_ID` char(10) NOT NULL,
   `GridSizeX` int(11) DEFAULT NULL,
   `GridSizeY` int(11) DEFAULT NULL,
-  `CellWidth` int(11) DEFAULT NULL,
-  `CellHeight` int(11) DEFAULT NULL,
   `TotalCellCnt` int(11) DEFAULT NULL,
   `CS_Cnt` int(11) DEFAULT NULL,
   `Chute_Cnt` int(11) DEFAULT NULL,
@@ -458,7 +453,7 @@ CREATE TABLE IF NOT EXISTS `project` (
   PRIMARY KEY (`Project_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='프로젝트 정보를 담은 테이블';
 
--- 테이블 데이터 lghpdb.project:~0 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.project:~1 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `project` DISABLE KEYS */;
 /*!40000 ALTER TABLE `project` ENABLE KEYS */;
 
@@ -544,7 +539,7 @@ CREATE TABLE IF NOT EXISTS `simulation` (
   CONSTRAINT `FK_simulation_Project_ID` FOREIGN KEY (`Project_ID`) REFERENCES `project` (`Project_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COMMENT='시뮬레이션 정보를 담은 테이블';
 
--- 테이블 데이터 lghpdb.simulation:~0 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.simulation:~1 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `simulation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `simulation` ENABLE KEYS */;
 
@@ -997,7 +992,7 @@ CREATE TABLE IF NOT EXISTS `workstation` (
   CONSTRAINT `FK_workstation_Grid_ID` FOREIGN KEY (`Grid_ID`) REFERENCES `grid` (`Grid_ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- 테이블 데이터 lghpdb.workstation:~21 rows (대략적) 내보내기
+-- 테이블 데이터 lghpdb.workstation:~12 rows (대략적) 내보내기
 /*!40000 ALTER TABLE `workstation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `workstation` ENABLE KEYS */;
 
