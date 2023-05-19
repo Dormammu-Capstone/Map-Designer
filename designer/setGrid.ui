@@ -19,8 +19,8 @@
   <widget class="QLabel" name="label_16">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>80</y>
+     <x>586</x>
+     <y>84</y>
      <width>141</width>
      <height>32</height>
     </rect>
@@ -263,8 +263,8 @@ border-radius: 10px;</string>
   <widget class="QLabel" name="label_11">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>290</y>
+     <x>420</x>
+     <y>280</y>
      <width>331</width>
      <height>25</height>
     </rect>
@@ -288,44 +288,11 @@ border-radius: 10px;</string>
     <string>워크 스테이션 (Work Station)         </string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="cnt_block">
-   <property name="geometry">
-    <rect>
-     <x>850</x>
-     <y>396</y>
-     <width>100</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>100</width>
-     <height>35</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>15</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(1,35,40); color:rgb(82, 242, 226);border: 1px solid rgb(107,242,242);</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QComboBox" name="cb_block">
    <property name="geometry">
     <rect>
-     <x>724</x>
-     <y>396</y>
+     <x>804</x>
+     <y>386</y>
      <width>120</width>
      <height>35</height>
     </rect>
@@ -408,8 +375,8 @@ border-radius: 10px;</string>
   <widget class="QLabel" name="label_13">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>345</y>
+     <x>420</x>
+     <y>335</y>
      <width>144</width>
      <height>25</height>
     </rect>
@@ -436,8 +403,8 @@ border-radius: 10px;</string>
   <widget class="QLabel" name="label_12">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>235</y>
+     <x>420</x>
+     <y>225</y>
      <width>142</width>
      <height>25</height>
     </rect>
@@ -464,8 +431,8 @@ border-radius: 10px;</string>
   <widget class="QComboBox" name="cb_ws">
    <property name="geometry">
     <rect>
-     <x>724</x>
-     <y>286</y>
+     <x>804</x>
+     <y>276</y>
      <width>120</width>
      <height>35</height>
     </rect>
@@ -548,8 +515,8 @@ border-radius: 10px;</string>
   <widget class="QLabel" name="label_14">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>180</y>
+     <x>420</x>
+     <y>170</y>
      <width>222</width>
      <height>25</height>
     </rect>
@@ -573,108 +540,11 @@ border-radius: 10px;</string>
     <string>충전 (Cahrge Point)</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="cnt_chute">
-   <property name="geometry">
-    <rect>
-     <x>850</x>
-     <y>231</y>
-     <width>100</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>100</width>
-     <height>35</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>15</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(1,35,40); color:rgb(82, 242, 226);border: 1px solid rgb(107,242,242);</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="cnt_charge">
-   <property name="geometry">
-    <rect>
-     <x>850</x>
-     <y>176</y>
-     <width>100</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>100</width>
-     <height>35</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>15</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(1,35,40); color:rgb(82, 242, 226);border: 1px solid rgb(107,242,242);</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_10">
-   <property name="geometry">
-    <rect>
-     <x>740</x>
-     <y>120</y>
-     <width>97</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <family>나눔고딕 ExtraBold</family>
-     <pointsize>20</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">color:rgb(82, 242, 226);</string>
-   </property>
-   <property name="text">
-    <string>색상</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_9">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>400</y>
+     <x>420</x>
+     <y>390</y>
      <width>163</width>
      <height>24</height>
     </rect>
@@ -701,8 +571,8 @@ border-radius: 10px;</string>
   <widget class="QComboBox" name="cb_buffer">
    <property name="geometry">
     <rect>
-     <x>724</x>
-     <y>341</y>
+     <x>804</x>
+     <y>331</y>
      <width>120</width>
      <height>35</height>
     </rect>
@@ -781,45 +651,12 @@ border-radius: 10px;</string>
       <normaloff>image/gray.png</normaloff>image/gray.png</iconset>
     </property>
    </item>
-  </widget>
-  <widget class="QLineEdit" name="cnt_buffer">
-   <property name="geometry">
-    <rect>
-     <x>850</x>
-     <y>341</y>
-     <width>100</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>100</width>
-     <height>35</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>15</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(1,35,40); color:rgb(82, 242, 226);border: 1px solid rgb(107,242,242);</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
   </widget>
   <widget class="QComboBox" name="cb_chute">
    <property name="geometry">
     <rect>
-     <x>724</x>
-     <y>231</y>
+     <x>804</x>
+     <y>221</y>
      <width>120</width>
      <height>35</height>
     </rect>
@@ -898,45 +735,12 @@ border-radius: 10px;</string>
       <normaloff>image/gray.png</normaloff>image/gray.png</iconset>
     </property>
    </item>
-  </widget>
-  <widget class="QLineEdit" name="cnt_ws">
-   <property name="geometry">
-    <rect>
-     <x>850</x>
-     <y>286</y>
-     <width>100</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>100</width>
-     <height>35</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>15</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(1,35,40); color:rgb(82, 242, 226);border: 1px solid rgb(107,242,242);</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
   </widget>
   <widget class="QComboBox" name="cb_charge">
    <property name="geometry">
     <rect>
-     <x>724</x>
-     <y>176</y>
+     <x>804</x>
+     <y>166</y>
      <width>120</width>
      <height>35</height>
     </rect>
@@ -1015,37 +819,6 @@ border-radius: 10px;</string>
       <normaloff>image/gray.png</normaloff>image/gray.png</iconset>
     </property>
    </item>
-  </widget>
-  <widget class="QLabel" name="label_15">
-   <property name="geometry">
-    <rect>
-     <x>850</x>
-     <y>121</y>
-     <width>74</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <family>나눔고딕 ExtraBold</family>
-     <pointsize>20</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">color:rgb(82, 242, 226);</string>
-   </property>
-   <property name="text">
-    <string>   개수</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
   </widget>
   <zorder>listView_2</zorder>
   <zorder>listView_3</zorder>
@@ -1056,22 +829,15 @@ border-radius: 10px;</string>
   <zorder>count_h</zorder>
   <zorder>gridNext</zorder>
   <zorder>label_11</zorder>
-  <zorder>cnt_block</zorder>
   <zorder>cb_block</zorder>
   <zorder>label_13</zorder>
   <zorder>label_12</zorder>
   <zorder>cb_ws</zorder>
   <zorder>label_14</zorder>
-  <zorder>cnt_chute</zorder>
-  <zorder>cnt_charge</zorder>
-  <zorder>label_10</zorder>
   <zorder>label_9</zorder>
   <zorder>cb_buffer</zorder>
-  <zorder>cnt_buffer</zorder>
   <zorder>cb_chute</zorder>
-  <zorder>cnt_ws</zorder>
   <zorder>cb_charge</zorder>
-  <zorder>label_15</zorder>
   <zorder>label_16</zorder>
  </widget>
  <resources/>

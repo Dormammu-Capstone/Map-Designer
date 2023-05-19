@@ -495,7 +495,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 
     def btn_charge(self):
         global yellow, red, green, blue, gray, file_grid
-        i_charge = file_grid[13]
+        i_charge = file_grid[10]
         for ix in self.table.selectedIndexes():
             if i_charge == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
@@ -520,7 +520,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 
     def btn_chute(self):
         global yellow, red, green, blue, gray, file_grid
-        i_chute = file_grid[14]
+        i_chute = file_grid[11]
         for ix in self.table.selectedIndexes():
             if i_chute == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
@@ -545,7 +545,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 
     def btn_ws(self):
         global yellow, red, green, blue, gray, file_grid
-        i_ws = file_grid[15]
+        i_ws = file_grid[12]
         for ix in self.table.selectedIndexes():
             if i_ws == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
@@ -570,7 +570,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 
     def btn_buffer(self):
         global yellow, red, green, blue, gray, file_grid
-        i_buf = file_grid[16]
+        i_buf = file_grid[13]
         for ix in self.table.selectedIndexes():
             if i_buf == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
@@ -595,7 +595,7 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
 
     def btn_block(self):
         global yellow, red, green, blue, gray, file_grid
-        i_blk = file_grid[17]
+        i_blk = file_grid[14]
         for ix in self.table.selectedIndexes():
             if i_blk == 1:
                 self.table.item(ix.row(), ix.column()).setBackground(Qt.yellow)
@@ -675,25 +675,25 @@ class sixthwindow(QDialog, QWidget, form_sixthwindow):
         workbook = xlsxwriter.Workbook(filename)
         worksheet1 = workbook.add_worksheet('NewSheet1')
         global yellow, red, blue, gray, green, temp_count_wid, temp_count_high, file_name, file_grid
-        sql = "CALL deleteGrid(%s); CALL createGrid(%s, %s, %s, %s, %s); CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s);"
-        cur.execute(sql, [file_name, file_name, temp_count_wid, temp_count_high, int(file_grid[4]), int(file_grid[5]),
-                          file_name, int(file_grid[7]), int(file_grid[8]), int(
-                              file_grid[9]), int(file_grid[10]),
-                          int(file_grid[11]), file_name, int(file_grid[13]), int(
-                              file_grid[14]), int(file_grid[15]),
-                          int(file_grid[16]), int(file_grid[17])])
+        sql = "CALL deleteGrid(%s); CALL createGrid(%s, %s, %s); CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s);"
+        cur.execute(sql, [file_name, file_name, temp_count_wid, temp_count_high,
+                          file_name, int(file_grid[4]), int(file_grid[5]), int(
+                              file_grid[6]), int(file_grid[7]),
+                          int(file_grid[8]), file_name, int(file_grid[10]), int(
+                              file_grid[11]), int(file_grid[12]),
+                          int(file_grid[13]), int(file_grid[14])])
 
-        for i in range(13, 18):
+        for i in range(10, 15):
             if int(file_grid[i]) == 1:
-                yellow = i - 12
+                yellow = i - 9
             elif int(file_grid[i]) == 2:
-                red = i - 12
+                red = i - 9
             elif int(file_grid[i]) == 3:
-                green = i - 12
+                green = i - 9
             elif int(file_grid[i]) == 4:
-                blue = i - 12
+                blue = i - 9
             else:
-                gray = i - 12
+                gray = i - 9
 
         cnum = 1
         CSnum = 1
@@ -907,23 +907,6 @@ class secondwindow(QDialog, QWidget, form_secondwindow):
         global count_wid, count_high
         count_wid = self.count_w.text()
         count_high = self.count_h.text()
-        global count_charge, count_chute, count_ws, count_buf, count_blk
-        count_charge = self.cnt_charge.text()
-        count_chute = self.cnt_chute.text()
-        count_ws = self.cnt_ws.text()
-        count_buf = self.cnt_buffer.text()
-        count_blk = self.cnt_block.text()
-        self.hide()
-        self.third = fourthwindow()
-        self.third.exec()
-
-    def btn_next_to_map(self):
-        global count_charge, count_chute, count_ws, count_buf, count_blk
-        count_charge=self.cnt_charge.text()
-        count_chute=self.cnt_chute.text()
-        count_ws=self.cnt_ws.text()
-        count_buf=self.cnt_buffer.text()
-        count_blk=self.cnt_block.text()
         self.hide()
         self.third = fourthwindow()
         self.third.exec()
@@ -1305,13 +1288,10 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
     # -saveMap button 함수: 맵 저장
     def btn_save_map(self):
         global yellow, red, blue, gray, green
-        global temp_count_wid, temp_count_high, size_wid, size_high
+        global temp_count_wid, temp_count_high
         global count_charge, count_chute, count_ws, count_buf, count_blk
         global i_charge, i_chute, i_ws, i_buf, i_blk
 
-        #임시! 매크로 고치기!
-        size_high=0
-        size_wid=0
 
         file = QFileDialog.getSaveFileName(self, '', '', 'xlsx Files(*.xlsx)')
         workbook = xlsxwriter.Workbook(file[0])
@@ -1320,8 +1300,15 @@ class fourthwindow(QDialog, QWidget, form_fourthwindow):
         file_name = QFileInfo(file[0]).baseName()
 
         # 그리드 테이블 생성
-        sql = "CALL createGrid(%s, %s, %s, %s, %s);"
-        cur.execute(sql, [str(file_name), temp_count_wid,temp_count_high, size_wid, size_high])
+        sql = "CALL createGrid(%s, %s, %s);"
+        cur.execute(sql, [str(file_name), temp_count_wid,temp_count_high])
+
+        #임시
+        count_charge=0
+        count_chute=0
+        count_ws=0
+        count_buf=0
+        count_blk=0
 
         # 그리드 셀 개수, 특수 셀 색상 정보 업데이트
         sql = "CALL updateCellCnt(%s, %s, %s, %s, %s, %s); CALL updateGridColor(%s, %s, %s, %s, %s, %s)"
