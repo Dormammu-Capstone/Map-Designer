@@ -12,5 +12,11 @@
 - 맵 수정하기
 
 ## 미리 보기
+<img width="472" height="300" alt="1" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/cc8d370d-8f06-456d-8e19-05075c2b4342">
+<img width="472" height="300" alt="2" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/36e0f975-e95a-4956-97eb-e0c402d51ad6">
+<img width="472" height="300" alt="3" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/b2770dc8-54e3-4d7f-b975-dceea34cfa96">
+<img width="472" height="300" alt="4" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/651087a1-82d7-44cf-904a-8aacc7e2342e">
+<img width="472" height="300" alt="5" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/10010e4f-0117-4859-a3f3-c1af94053af2">
 
 ## 사용 흐름
+<img width="600" height="200" alt="Untitled" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/b22f87f4-7eb4-4b44-ab7a-47b76667d650">
