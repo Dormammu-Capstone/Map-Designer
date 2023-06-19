@@ -19,4 +19,4 @@
 <img width="472" height="300" alt="5" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/10010e4f-0117-4859-a3f3-c1af94053af2">
 
 ## 사용 흐름
-<img width="600" height="200" alt="Untitled" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/b22f87f4-7eb4-4b44-ab7a-47b76667d650">
+<img width="600" height="150" alt="Untitled" src="https://github.com/Dormammu-Capstone/Map-Designer/assets/74133818/b22f87f4-7eb4-4b44-ab7a-47b76667d650">
